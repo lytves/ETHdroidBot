@@ -2,11 +2,11 @@
 
 **Is under development...**
 
-[@ETHbalanceBot](https://t.me/CryptoCoinsInfoBot "@ETHbalanceBot") - enjoy it!
+[@ETHbalanceBot](https://t.me/ETHbalanceBot "@ETHbalanceBot") - enjoy it!
 
 This is a simple version of a Telegram Bot, had been used [pyTelegramBotAPI Library](https://github.com/eternnoir/pyTelegramBotAPI "pyTelegramBotAPI Library GitHub Repository"), you can use *start_polling* or *webhook* updates methods for recieve the messages (see ethbalancebot.py code)
 
-API of [Ethplorer.io](https://t.me/CryptoCoinsInfoBot "Ethplorer.io") is used
+API of [Ethplorer.io](https://ethplorer.io/ "Ethplorer.io") is used
 
 #### Settings:
 
