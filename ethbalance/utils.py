@@ -134,9 +134,5 @@ def show_bot_options():
     print('show_bot_options() under developing')
 
 
-def share_bot():
-    return 'https://t.me/share/url?url=[url-to-send-here]&text=[text]'
-
-
 def send_feedback():
     print('send_feedback() under developing')
