@@ -1,11 +1,10 @@
 import requests
 import locale
 import logging
-from logging.handlers import TimedRotatingFileHandler
 
 from decimal import Decimal
 
-from ethbalance.config import YOUR_ETH_ADDRESS, API_URL, API_KEY
+from ethbalance.config import API_URL, API_KEY, YOUR_ETH_ADDRESS
 from ethbalance.handlers import get_usr_language_array
 
 locale.setlocale(locale.LC_NUMERIC, 'en_GB.utf8')
@@ -48,12 +47,23 @@ def send_to_log(update, msg_type='command'):
         # TODO are trying to send a command to the bot)
 
 
-def add_eth_wallet():
-    print('under developing')
+def add_eth_wallet(last_menu_page):
+
+    usr_language_array = get_usr_language_array()
+
+    if last_menu_page == 'add_name_wallet':
+        return usr_language_array['TXT_ADD_ETH_NAME_WALLET']
+
+    elif last_menu_page == 'add_address_wallet':
+        return usr_language_array['TXT_ADD_ETH_ADDRESS_WALLET']
+
+    else:
+        return usr_language_array['MENU_GO_BACK']
 
 
 def del_eth_wallet():
-    print('under developing')
+    print('del_eth_wallet() under developing')
+    return 'del'
 
 
 def check_balance():
@@ -62,7 +72,6 @@ def check_balance():
 
     module_logger.info("API request URL: %s", url)
     response = requests.get(url)
-    # responseDict = json.load(open('json.json'))
 
     usr_language_array = get_usr_language_array()
 
@@ -122,16 +131,12 @@ def check_balance():
 
 
 def show_bot_options():
-    print('under developing')
+    print('show_bot_options() under developing')
 
 
 def share_bot():
-    print('under developing')
-
-
-def share_bot():
-    print('under developing')
+    return 'https://t.me/share/url?url=[url-to-send-here]&text=[text]'
 
 
 def send_feedback():
-    print('under developing')
+    print('send_feedback() under developing')

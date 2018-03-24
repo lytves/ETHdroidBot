@@ -1,5 +1,8 @@
+import os
+import sys
+from threading import Thread
+
 import logging
-from logging.handlers import TimedRotatingFileHandler
 
 from telegram.ext import Updater
 from telegram.ext import CommandHandler, MessageHandler, Filters
@@ -34,24 +37,33 @@ def main():
     # bot's error handler
     dispatcher.add_error_handler(error)
 
-    # bot's command handlers
+    # bot's command start handlers
     start_handler = CommandHandler('start', start)
     dispatcher.add_handler(start_handler)
 
-    # bot's command handlers
-    start_handler = CommandHandler('admin_say', admin_say)
-    dispatcher.add_handler(start_handler)
+    ####################### bot's admin command handlers
+    def stop_and_restart():
+        """Gracefully stop the Updater and replace the current process with a new one"""
+        updater.stop()
+        os.execl(sys.executable, sys.executable, *sys.argv)
+
+    def restart(bot, update):
+        update.message.reply_text('Bot is restarting...')
+        Thread(target=stop_and_restart(updater)).start()
+        update.message.reply_text('Bot had been restarted!')
+
+    # put your Telegram alias here!
+    dispatcher.add_handler(CommandHandler('admin_say', admin_say, filters=Filters.user(username='@YourTelegramAliasHere')))
+
+    dispatcher.add_handler(CommandHandler('restart', restart, filters=Filters.user(username='@YourTelegramAliasHere')))
+    ####################### bot's admin command handlers
 
     # bot's text handlers
     text_update_handler = MessageHandler(Filters.text, text_input)
     dispatcher.add_handler(text_update_handler)
 
-    # here put the job for the bot
-    # job_queue = updater.job_queue
-    # job_queue.run_repeating(download_api_coinslists_handler, 150, 10, context='coinmarketcap')
-    # job_queue.run_repeating(download_api_coinslists_handler, 150, 40, context='cryptocompare')
-
     updater.start_polling()
+    updater.idle()
 
     # put your server IP adress instead 0.0.0.0
     # and see this page https://github.com/python-telegram-bot/python-telegram-bot/wiki/Webhooks

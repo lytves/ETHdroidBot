@@ -1,4 +1,4 @@
-# Russian
+# Russian language ('ru' and 'ru-RU')
 RUSSIAN = {'MENU_ADD_ETH_WALLET': 'Добавить кошелёк',
            'MENU_DEL_ETH_WALLET': 'Удалить кошелёк',
            'MENU_CHECK_ALL_BALANCE': 'Мой баланс',
@@ -6,12 +6,16 @@ RUSSIAN = {'MENU_ADD_ETH_WALLET': 'Добавить кошелёк',
            'MENU_SHARE_BOT': 'Поделиться',
            'MENU_FEEDBACK': 'Обратная связь',
            'TXT_USE_KEYBOARD': 'Используйте клавиатуру бота, пожалуйста',
-           'TXT_SHARE_BOT': 'Отправь ссылку на этого бота своим друзьям!',
+           'TXT_SHARE_BOT': 'Отправь ссылку на этого бота своим друзьям! 👇',
            'TXT_FEEDBACK': 'Напишите ваше сообщение для администратора:',
            'MENU_GO_BACK': 'Назад',
-           'TXT_ERROR': 'К сожалению не могу отобразить информацию сейчас. Пожалуйста, попробуй позже!'}
+           'TXT_ERROR': 'К сожалению не могу отобразить информацию сейчас. Пожалуйста, попробуй позже!',
+           'TXT_ADD_ETH_NAME_WALLET': 'Введи имя для твоего *Ethereum кошелька*:',
+           'TXT_ADD_ETH_ADDRESS_WALLET': 'Введи адрес твоего *Ethereum кошелька*:',
+           'LINK_SHARE_BOT': 'Поделиться ботом',
+           'LINK_TEXT_SHARE_BOT': 'Всегда будь в курсе баланса Эфириума и токенов на твоих кошельках'}
 
-# Spanish
+# Spanish language ('es' and 'es-ES')
 SPANISH = {'MENU_ADD_ETH_WALLET': 'Añadir cartera',
            'MENU_DEL_ETH_WALLET': 'Quitar cartera',
            'MENU_CHECK_ALL_BALANCE': 'Mi saldo',
@@ -19,14 +23,18 @@ SPANISH = {'MENU_ADD_ETH_WALLET': 'Añadir cartera',
            'MENU_SHARE_BOT': 'Compartir',
            'MENU_FEEDBACK': 'Feedback',
            'TXT_USE_KEYBOARD': 'Usa el teclado del bot, por favor',
-           'TXT_SHARE_BOT': 'Comparte este bot con tus amigos!',
+           'TXT_SHARE_BOT': 'Comparte este bot con tus amigos! 👇',
            'TXT_FEEDBACK': 'Escribe tu mensaje para el administrador:',
            'MENU_GO_BACK': 'Atrás',
-           'TXT_ERROR': 'Lo siento, ahora no puedo mostarte información. Pruebalo más tarde por favor!'}
+           'TXT_ERROR': 'Lo siento, ahora no puedo mostarte información. Pruebalo más tarde por favor!',
+           'TXT_ADD_ETH_NAME_WALLET': 'Entra un nombre de tu *cartera de Ethereum*:',
+           'TXT_ADD_ETH_ADDRESS_WALLET': 'Entra la dirección de tu *cartera de Ethereum*:',
+           'LINK_SHARE_BOT': 'Compartir el bot',
+           'LINK_TEXT_SHARE_BOT': 'Siempre estarás controlando el saldo de Ethereum y los tokens en tus carteras'}
 
-# English
+# English language (by default)
 ENGLISH = {'MENU_ADD_ETH_WALLET': 'Add wallet',
-           'MENU_DEL_ETH_WALLET': 'Quitar cartera',
+           'MENU_DEL_ETH_WALLET': 'Delete wallet',
            'MENU_CHECK_ALL_BALANCE': 'My balance',
            'MENU_BOT_OPTIONS': 'Options',
            'MENU_SHARE_BOT': 'Share',
@@ -35,4 +43,8 @@ ENGLISH = {'MENU_ADD_ETH_WALLET': 'Add wallet',
            'TXT_SHARE_BOT': 'Share this bot with your friends!',
            'TXT_FEEDBACK': 'Write your message for the admin:',
            'MENU_GO_BACK': 'Back',
-           'TXT_ERROR': 'Sorry, I can\'t show you information now. Please, try again later!'}
+           'TXT_ERROR': 'Sorry, I can\'t show you information now. Please, try again later!',
+           'TXT_ADD_ETH_NAME_WALLET': 'Enter a name for your *Ethereum wallet*:',
+           'TXT_ADD_ETH_ADDRESS_WALLET': 'Enter an address of your *Ethereum wallet*:',
+           'LINK_SHARE_BOT': 'Share the bot',
+           'LINK_TEXT_SHARE_BOT': 'Stay informed of the balance of Ethereum and tokens on yours wallets'}
