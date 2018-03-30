@@ -2,33 +2,17 @@ import os
 import sys
 from threading import Thread
 
-import logging
-
 from telegram.ext import Updater
-from telegram.ext import CommandHandler, MessageHandler, Filters
+from telegram.ext import CommandHandler, MessageHandler, CallbackQueryHandler, Filters
 
-from ethbalance.config import TOKEN_BOT
-from ethbalance.handlers import start, admin_say, error, text_input
+from ethbalance.config import TOKEN_BOT, YOUR_TELEGRAM_ALIAS
+from ethbalance.handlers import start, admin_say, error, text_handler
 
-# start logging to the file of current directory or print it to console
-logging.basicConfig(level=logging.INFO,
-                   format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-
-# start logging to the file with log rotation at midnight of each day
-# formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s %(message)s')
-# handler = TimedRotatingFileHandler(os.path.dirname(os.path.realpath(__file__)) + '/ethbalancebot.log',
-#                                    when='midnight',
-#                                    backupCount=10)
-# handler.setFormatter(formatter)
-# logger = logging.getLogger(__name__)
-# logger.addHandler(handler)
-# logger.setLevel(logging.INFO)
-# end of log section
+from ethbalance.utils import module_logger
 
 
 def main():
-    logger.info("Start the @ETHbalanceBot bot!")
+    module_logger.info("Start the @ETHbalanceBot bot!")
 
     # create an object "bot"
     updater = Updater(token=TOKEN_BOT)
@@ -41,7 +25,20 @@ def main():
     start_handler = CommandHandler('start', start)
     dispatcher.add_handler(start_handler)
 
-    ####################### bot's admin command handlers
+    # bot's command to send a message for all users
+    # put your Telegram alias here!
+    dispatcher.add_handler(CommandHandler('admin_say', admin_say,
+                                          filters=Filters.user(username=YOUR_TELEGRAM_ALIAS)))
+
+    # bot's text handler
+    text_update_handler = MessageHandler(Filters.text, text_handler)
+    dispatcher.add_handler(text_update_handler)
+
+    # CallbackQueryHandler to catch InlineKeyboardMarkup "callback_data"
+    updater.dispatcher.add_handler(CallbackQueryHandler(text_handler))
+
+
+    ####################### bot's service handlers
     def stop_and_restart():
         """Gracefully stop the Updater and replace the current process with a new one"""
         updater.stop()
@@ -52,19 +49,18 @@ def main():
         Thread(target=stop_and_restart(updater)).start()
         update.message.reply_text('Bot had been restarted!')
 
-    # put your Telegram alias here!
-    dispatcher.add_handler(CommandHandler('admin_say', admin_say, filters=Filters.user(username='@YourTelegramAliasHere')))
+    dispatcher.add_handler(CommandHandler('restart', restart,
+                                          filters=Filters.user(username=YOUR_TELEGRAM_ALIAS)))
 
-    dispatcher.add_handler(CommandHandler('restart', restart, filters=Filters.user(username='@YourTelegramAliasHere')))
-    ####################### bot's admin command handlers
 
-    # bot's text handlers
-    text_update_handler = MessageHandler(Filters.text, text_input)
-    dispatcher.add_handler(text_update_handler)
-
+    # Start the Bot start_polling() method
+    # Run the bot until the user presses Ctrl-C or the process receives SIGINT,
+    # SIGTERM or SIGABRT
     updater.start_polling()
     updater.idle()
 
+
+    # Start the Bot set_webhook() method
     # put your server IP adress instead 0.0.0.0
     # and see this page https://github.com/python-telegram-bot/python-telegram-bot/wiki/Webhooks
     # updater.start_webhook(listen='127.0.0.1', port=5002, url_path=TOKEN_BOT)
