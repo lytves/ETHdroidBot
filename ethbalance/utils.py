@@ -100,8 +100,8 @@ def send_to_log(update, msg_type='command'):
 # a request for ethereum API
 def check_address(usr_lang_code, usr_wallet_address):
 
-    url = ETHERSCAN_API_URL.format(ETHERSCAN_API_KEY)
-    response = requests.get(ETHPLORER_API_URL.format(usr_wallet_address))
+    url = ETHPLORER_API_URL.format(usr_wallet_address)
+    response = requests.get(url)
 
     module_logger.info("API request URL: %s", url)
 
