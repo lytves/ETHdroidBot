@@ -82,6 +82,7 @@ def text_handler(bot, update):
 
     if not mongo.connectionOK:
         # TODO send a message for admin for DB error
+        print('DB don\'t connect successfully')
         return
 
     user_object = mongo.get_user(usr_chat_id)

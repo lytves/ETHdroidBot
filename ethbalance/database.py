@@ -17,7 +17,9 @@ class MongoDatabase:
             self.db = self.client[MONGO_DB_NAME]
             self.collection = self.db[MONGO_DB_COLLECTION]
 
-            self.connectionOK = True
+            if self.collection in self.db.collection_names():
+
+                self.connectionOK = True
 
         except ServerSelectionTimeoutError or ConnectionFailure:
             print("Server not available")

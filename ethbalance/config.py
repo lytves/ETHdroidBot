@@ -1,5 +1,5 @@
 # put your bot's token here
-TOKEN_BOT = 'put_your_bot_token_here'
+TOKEN_BOT = '494042390:AAHhaUXjD5QyTRUPZo3CcUFGuXht5DDFTEk'
 
 YOUR_TELEGRAM_ALIAS = '@put_your_alias_here'
 
