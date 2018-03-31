@@ -4,7 +4,7 @@ import re
 
 from decimal import Decimal
 
-from ethbalance.config import API_URL, API_KEY
+from ethbalance.config import ETHPLORER_API_URL, ETHPLORER_API_KEY, ETHERSCAN_API_URL, ETHERSCAN_API_KEY
 from ethbalance.languages import *
 from ethbalance.reply_markups import reply_markup_en, reply_markup_es, reply_markup_ru, \
     reply_markup_back_en, reply_markup_back_es, reply_markup_back_ru
@@ -23,6 +23,10 @@ module_logger = logging.getLogger(__name__)
 # module_logger.addHandler(handler)
 # module_logger.setLevel(logging.INFO)
 # end of log section
+
+
+api_ethusd = 0.0
+api_ethbtc = 0.0
 
 
 # to put correct conversation/menu language
@@ -96,10 +100,10 @@ def send_to_log(update, msg_type='command'):
 # a request for ethereum API
 def check_address(usr_lang_code, usr_wallet_address):
 
-    url = API_URL + usr_wallet_address + '?apiKey=' + API_KEY
+    url = ETHERSCAN_API_URL.format(ETHERSCAN_API_KEY)
+    response = requests.get(ETHPLORER_API_URL.format(usr_wallet_address))
 
     module_logger.info("API request URL: %s", url)
-    response = requests.get(url)
 
     usr_language_array = set_usr_language_array(usr_lang_code)
 
@@ -114,7 +118,7 @@ def check_address(usr_lang_code, usr_wallet_address):
             errors = response_dict['error']
             module_logger.error('api.ethplorer.io error! %s', errors)
 
-            msg_text = usr_language_array['TXT_ERROR'] + "\n`" + errors['message'] + '`'
+            msg_text = '\n' + usr_language_array['TXT_ERROR'] + '\n`' + errors['message'] + '`'
 
         else:
             address = str(response_dict['address'])
@@ -206,3 +210,10 @@ def is_valid_eth_address(usr_msg_text):
 
     if re.search('^0x[a-zA-Z0-9]{40}', usr_msg_text):
         return True
+
+
+# to parse current ETHEREUM usd and btc prices
+def api_eth_price():
+
+    global api_ethusd, api_ethbtc
+
