@@ -8,7 +8,7 @@ from telegram.ext import CommandHandler, MessageHandler, CallbackQueryHandler, F
 from ethbalance.config import TOKEN_BOT, YOUR_TELEGRAM_ALIAS
 from ethbalance.handlers import start, admin_say, error, text_handler
 
-from ethbalance.utils import module_logger
+from ethbalance.utils import module_logger, api_eth_price
 
 
 def main():
@@ -37,6 +37,11 @@ def main():
     # CallbackQueryHandler to catch InlineKeyboardMarkup "callback_data"
     updater.dispatcher.add_handler(CallbackQueryHandler(text_handler))
 
+    # here put the jobs for the bot
+    job_queue = updater.job_queue
+    # checked ETHEREUM price each 30sec, from 5sec of the bot's start
+    job_queue.run_repeating(api_eth_price, 30, 5)
+
 
     ####################### bot's service handlers
     def stop_and_restart():
@@ -46,7 +51,7 @@ def main():
 
     def restart(bot, update):
         update.message.reply_text('Bot is restarting...')
-        Thread(target=stop_and_restart(updater)).start()
+        Thread(target=stop_and_restart).start()
         update.message.reply_text('Bot had been restarted!')
 
     dispatcher.add_handler(CommandHandler('restart', restart,

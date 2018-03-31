@@ -19,14 +19,14 @@ RUSSIAN = {'TXT_USE_START_BUTTON': '🚀 Используй команду /star
            'TXT_ADD_ETH_ADDRESS_WALLET_EXISTS': '📌 Этот *Ethereum адрес* уже был добавлен ранее',
            'TXT_ADD_ETH_ADDRESS_WALLET_ADDED': '*✅ Ethereum адрес* успешно добавлен!\n',
            'LINK_SHARE_BOT': 'Поделиться ботом',
-           'LINK_TEXT_SHARE_BOT': 'Всегда будешь в курсе баланса Эфириума и ERC-20 токенов на твоих кошельках! 👍',
+           'LINK_TEXT_SHARE_BOT': 'Всегда будешь в курсе баланса Эфириума и ERC токенов на твоих кошельках! 👍',
            'TXT_ETH_ADDRESS': '📌 *Ethereum адрес:* ',
-           'TXT_ETH_TOKENS': '📎 *Tокены ERC-20*:',
-           'TXT_ETH_TOKENS_EMPTY': '📎 *Нет токенов*',
+           'TXT_ETH_TOKENS': '📎 *Tокены ERC*:',
+           'TXT_ETH_TOKENS_EMPTY': '📎 *Нет ERC токенов*',
            'TXT_DEL_ETH_WALLET': '❌ Выбери *Ethereum кошелёк* для удаления:',
            'TXT_NO_ETH_WALLET': 'ℹ Нет ни одного *Ethereum кошелька*!',
            'TXT_START_MSG': '👽 Привет, я твой Эфириум Баланс Бот! Помогу тебе быть в курсе '
-                            'актуального баланса Эфириум и ERC-20 токенов на твоих кошельках.'}
+                            'актуального баланса Эфириум и ERC токенов на твоих кошельках.'}
 
 # Spanish language ('es' and 'es-ES')
 SPANISH = {'TXT_USE_START_BUTTON': '🚀 ¡Utiliza el comando /start para empezar usar el bot!',
@@ -47,14 +47,14 @@ SPANISH = {'TXT_USE_START_BUTTON': '🚀 ¡Utiliza el comando /start para empeza
            'TXT_ADD_ETH_ADDRESS_WALLET_EXISTS': '📌 Esta *direccíon de Ethereum* ya está en tu lista',
            'TXT_ADD_ETH_ADDRESS_WALLET_ADDED': '✅ ¡*La direccíon de Ethereum* añadida con éxito!\n',
            'LINK_SHARE_BOT': 'Compartir el bot',
-           'LINK_TEXT_SHARE_BOT': '¡Siempre estarás controlando tu saldo de Ethereum y ERC-20 tokens en tus carteras! 👍',
+           'LINK_TEXT_SHARE_BOT': '¡Siempre estarás controlando tu saldo de Ethereum y ERC tokens en tus carteras! 👍',
            'TXT_ETH_ADDRESS': '📌 *Ethereum dirección:* ',
-           'TXT_ETH_TOKENS': '📎 *Tokens ERC-20:*',
-           'TXT_ETH_TOKENS_EMPTY': '📎 *Aun no hay tokens*',
+           'TXT_ETH_TOKENS': '📎 *Tokens ERC:*',
+           'TXT_ETH_TOKENS_EMPTY': '📎 *Aún no hay tokens ERC*',
            'TXT_DEL_ETH_WALLET': '❌ Elige una *cartera de Ethereum* para borrar:',
            'TXT_NO_ETH_WALLET': 'ℹ ¡No tienes ninguna *cartera de Ethereum*!',
            'TXT_START_MSG': '👽 ¡Hola! Soy tu Ethereum Balance Bot, te ayudo para que siempre sepas '
-                            'el saldo de Ethereum y ERC-20 tokens en tus carteras.'}
+                            'el saldo de Ethereum y ERC tokens en tus carteras.'}
 
 # English language (by default)
 ENGLISH = {'TXT_USE_START_BUTTON': '🚀 Use the command /start to bot\'s work!',
@@ -75,11 +75,11 @@ ENGLISH = {'TXT_USE_START_BUTTON': '🚀 Use the command /start to bot\'s work!'
            'TXT_ADD_ETH_ADDRESS_WALLET_EXISTS': '📌 This *Ethereum address* has been already added earlier',
            'TXT_ADD_ETH_ADDRESS_WALLET_ADDED': '✅ *The Ethereum address* has been added successfully!\n',
            'LINK_SHARE_BOT': 'Share the bot',
-           'LINK_TEXT_SHARE_BOT': 'Stay informed of the balance of Ethereum and ERC-20 tokens on yours wallets! 👍',
+           'LINK_TEXT_SHARE_BOT': 'Stay informed of the balance of Ethereum and ERC tokens on yours wallets! 👍',
            'TXT_ETH_ADDRESS': '📌 *Ethereum address:* ',
-           'TXT_ETH_TOKENS': '📎 *Tokens ERC-20*:',
-           'TXT_ETH_TOKENS_EMPTY': '📎 *There is not any token yet*',
+           'TXT_ETH_TOKENS': '📎 *Tokens ERC*:',
+           'TXT_ETH_TOKENS_EMPTY': '📎 *There is not any token ERC yet*',
            'TXT_DEL_ETH_WALLET': '❌ Choose a *Ethereum wallet* for delete:',
            'TXT_NO_ETH_WALLET': 'ℹ There is no *Ethereum wallet*!',
            'TXT_START_MSG': '👽 Hello! I am your Ethereum Balance Bot, I will help you '
-                            'to control the balance of Ethereum and ERC-20 tokens on yours wallets.'}
+                            'to control the balance of Ethereum and ERC tokens on yours wallets.'}

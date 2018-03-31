@@ -4,7 +4,7 @@ import re
 
 from decimal import Decimal
 
-from ethbalance.config import ETHPLORER_API_URL, ETHPLORER_API_KEY, ETHERSCAN_API_URL, ETHERSCAN_API_KEY
+from ethbalance.config import ETHPLORER_API_URL, ETHERSCAN_API_URL
 from ethbalance.languages import *
 from ethbalance.reply_markups import reply_markup_en, reply_markup_es, reply_markup_ru, \
     reply_markup_back_en, reply_markup_back_es, reply_markup_back_ru
@@ -25,8 +25,8 @@ module_logger = logging.getLogger(__name__)
 # end of log section
 
 
-api_ethusd = 0.0
-api_ethbtc = 0.0
+price_ethusd = 0.0
+price_ethbtc = 0.0
 
 
 # to put correct conversation/menu language
@@ -100,6 +100,8 @@ def send_to_log(update, msg_type='command'):
 # a request for ethereum API
 def check_address(usr_lang_code, usr_wallet_address):
 
+    global price_ethusd
+
     url = ETHPLORER_API_URL.format(usr_wallet_address)
     response = requests.get(url)
 
@@ -123,13 +125,16 @@ def check_address(usr_lang_code, usr_wallet_address):
         else:
             address = str(response_dict['address'])
 
-            # check ETH balance
+            # check ETH balance & price
             eth_balance = round(Decimal(response_dict['ETH']['balance']), 9).normalize()
 
-            # eth_balance = ("%.9f" % eth_balance)
-            # eth_balance = round(eth_balance,9).normalize()
+            str_eth_price = ''
 
-            # check all tokens balance
+            if price_ethusd:
+
+                str_eth_price = ' `($' + str('%.2f' % (eth_balance * price_ethusd)) + ')`'
+
+            # check all tokens balance & price
             if 'tokens' in response_dict:
                 all_tokens_balance = '\n' + usr_language_array['TXT_ETH_TOKENS']
 
@@ -153,17 +158,11 @@ def check_address(usr_lang_code, usr_wallet_address):
                             str_token_balance = str(round(token_balance,9)).rstrip('0')
 
                         ############  TOKEN PRICE
+                        str_token_price = ''
+
                         if type(token['tokenInfo']['price']) is dict:
 
-                            str_token_price = ' `($ ' + str('%.2f' % (token_balance * Decimal(token['tokenInfo']['price']['rate']))) + ')`'
-
-                            print("token_balance: ", type(token_balance))
-                            print("token['tokenInfo']['price']['rate']: ", type(token['tokenInfo']['price']['rate']))
-                            print("Decimal(token['tokenInfo']['price']['rate']: ", type(Decimal(token['tokenInfo']['price']['rate'])))
-
-                        else:
-
-                            str_token_price = ''
+                            str_token_price = ' `($' + str('%.2f' % (token_balance * Decimal(token['tokenInfo']['price']['rate']))) + ')`'
 
                         ############  TOKEN NAME
 
@@ -187,13 +186,14 @@ def check_address(usr_lang_code, usr_wallet_address):
                                               + str_token_balance + str_token_price
 
             else:
-                all_tokens_balance = usr_language_array['TXT_ETH_TOKENS_EMPTY']
+
+                all_tokens_balance = '\n' + usr_language_array['TXT_ETH_TOKENS_EMPTY']
 
             # to show 6 characters from start and from end of the address
             msg_text = '\n' + usr_language_array['TXT_ETH_ADDRESS']\
                        + '*' + address[:6] + '....' + address[-6:]\
                        + '*\n`Ethereum` (*ETH*): '\
-                       + str(eth_balance)\
+                       + str(eth_balance) + str_eth_price\
                        + '\n' + all_tokens_balance + \
                        '\n`-------------------------`\n'
 
@@ -213,7 +213,22 @@ def is_valid_eth_address(usr_msg_text):
 
 
 # to parse current ETHEREUM usd and btc prices
-def api_eth_price():
+def api_eth_price(bot, job):
 
-    global api_ethusd, api_ethbtc
+    global price_ethusd, price_ethbtc
 
+    response = requests.get(ETHERSCAN_API_URL)
+
+    module_logger.info("API request URL: %s", ETHERSCAN_API_URL)
+
+    if response.status_code == requests.codes.ok and response.json()['message'] == 'OK':
+
+        # extract a json from response to a class "dict"
+        response_dict = response.json()
+
+        price_ethusd = Decimal(response_dict['result']['ethusd'])
+        price_ethbtc = Decimal(response_dict['result']['ethbtc'])
+
+    else:
+
+        module_logger.error('Error while request ETHERSCAN.io API. Error code: "%s"' % (response.json()['message']))
