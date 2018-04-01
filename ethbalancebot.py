@@ -8,7 +8,7 @@ from telegram.ext import CommandHandler, MessageHandler, CallbackQueryHandler, F
 from ethbalance.config import TOKEN_BOT, YOUR_TELEGRAM_ALIAS
 from ethbalance.handlers import start, admin_say, error, text_handler
 
-from ethbalance.utils import module_logger, api_eth_price
+from ethbalance.utils import module_logger, api_check_eth_price
 
 
 def main():
@@ -40,7 +40,7 @@ def main():
     # here put the jobs for the bot
     job_queue = updater.job_queue
     # checked ETHEREUM price each 30sec, from 5sec of the bot's start
-    job_queue.run_repeating(api_eth_price, 30, 5)
+    job_queue.run_repeating(api_check_eth_price, 30, 5)
 
 
     ####################### bot's service handlers

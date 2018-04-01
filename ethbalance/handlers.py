@@ -1,7 +1,6 @@
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ChatAction
 
 import ethbalance.utils as utils
-from ethbalance.config import LENGTH_WALLET_ADDRESS
 from ethbalance.database import MongoDatabase
 
 
@@ -20,6 +19,7 @@ def start(bot, update):
     # logging
     utils.send_to_log(update)
 
+    usr_username = ''
     if update.effective_message.from_user.username:
         usr_username = '@' + update.effective_message.from_user.username
 
@@ -128,6 +128,7 @@ def text_handler(bot, update):
 
         txt_response = usr_language_array['MENU_GO_BACK']
 
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     # pressed button "ADD_ETH_WALLET" from "Main Menu" ---->  'wait_wallet_address' page
     elif usr_language_array['MENU_ADD_ETH_WALLET'].upper() == usr_msg_text.upper():
 
@@ -144,6 +145,7 @@ def text_handler(bot, update):
 
             txt_response = usr_language_array['TXT_ADD_ETH_NAME_WALLETS_FULL']
 
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     # from "wait_wallet_address" input page ---->  * Main Menu" page if wallet address was added
     #                                         ---->  * repeat "wait_wallet_address" input page
     elif current_usr_bot_state == 'wait_wallet_address' and usr_msg_text \
@@ -152,36 +154,61 @@ def text_handler(bot, update):
         # checks if user has a gap in NUMBER_OF_WALLETS to add one more
         if utils.is_full_wallets_list(user_object):
 
-            # checks the wallet address length permitted
-            if len(usr_msg_text) == LENGTH_WALLET_ADDRESS:
+            # checks the wallet address length permitted and
+            # checks the wallet address format "0x" + 40 alphanumeric characters
+            if utils.is_valid_eth_address(usr_msg_text):
 
-                # checks the wallet address format "0x" + 40 alphanumeric characters
-                if utils.is_valid_eth_address(usr_msg_text):
+                usr_new_wallet_address = usr_msg_text
 
-                    usr_new_wallet_address = usr_msg_text
+                # to check the address is already in BD
+                exist_db_address_wallet = False
 
-                    if usr_new_wallet_address in user_object['usr_wallets']:
+                for db_address_wallet in user_object['usr_wallets']:
 
-                        user_object['usr_bot_state'] = ''
+                    if db_address_wallet['address'] == usr_new_wallet_address:
+
+                        exist_db_address_wallet = True
 
                         txt_response = usr_language_array['TXT_ADD_ETH_ADDRESS_WALLET_EXISTS']
 
-                    else:
+                        break
 
-                        user_object['usr_bot_state'] = ''
-                        user_object['usr_wallets'].append(usr_new_wallet_address)
+                if not exist_db_address_wallet:
 
-                        txt_response = usr_language_array['TXT_ADD_ETH_ADDRESS_WALLET_ADDED']
+                    # the response from API with address all info
+                    usr_wallet_api_info = utils.api_check_balance(usr_new_wallet_address)
 
-                        # check wallet balance now
-                        txt_response += utils.check_address(usr_lang_code, usr_new_wallet_address)
+                    # here write balance of new added address ETH and tokens to BD
+                    if usr_wallet_api_info:
 
-                    mongo.edit_user(user_object)
+                        usr_wallet = {"address": usr_new_wallet_address, "balance": 0.0, "tokens": []}
 
-                else:
+                        # address has a tokens
+                        if 'tokens' in usr_wallet_api_info:
 
-                    usr_keyboard = utils.set_user_usr_keyboard(usr_lang_code, 'go_back')
-                    txt_response = usr_language_array['TXT_ADD_ETH_ADDRESS_WALLET_WRONG']
+                            tokens = []
+
+                            for token in usr_wallet_api_info['tokens']:
+
+                                tokens.append({"address": token['tokenInfo']['address'],
+                                               "symbol": token['tokenInfo']['symbol'],
+                                               "decimals": token['tokenInfo']['decimals'],
+                                               "balance": token['balance']})
+
+                            usr_wallet.update({"tokens": tokens})
+
+                            user_object['usr_wallets'].append(usr_wallet)
+
+                            txt_response = usr_language_array['TXT_ADD_ETH_ADDRESS_WALLET_ADDED']
+
+                            # to notify a user "printing..." on waiting response
+                            bot.send_chat_action(chat_id=usr_chat_id, action=ChatAction.TYPING)
+
+                            # check wallet balance now
+                            txt_response += utils.api_check_balance2(usr_lang_code, usr_wallet['address'])
+
+                            user_object['usr_bot_state'] = ''
+                            mongo.edit_user(user_object)
 
             else:
 
@@ -195,6 +222,7 @@ def text_handler(bot, update):
 
             txt_response = usr_language_array['TXT_ADD_ETH_NAME_WALLETS_FULL']
 
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     # pressed button "MENU_DEL_ETH_WALLET" from "Main Menu" page ---->  stay here
     elif usr_language_array['MENU_DEL_ETH_WALLET'].upper() == usr_msg_text.upper():
 
@@ -205,69 +233,81 @@ def text_handler(bot, update):
             keyboard = []
             i = 0
 
-            for wallet in user_object['usr_wallets']:
-                keyboard.append([InlineKeyboardButton(
-                    wallet, callback_data=wallet)])
+            for db_address_wallet in user_object['usr_wallets']:
+
+                keyboard.append([InlineKeyboardButton(db_address_wallet['address'],
+                                                      callback_data=db_address_wallet['address'])])
                 i += 1
 
             usr_keyboard = InlineKeyboardMarkup(keyboard)
 
             user_object['usr_bot_state'] = 'wait_to_del_wallet_address'
-
             mongo.edit_user(user_object)
 
         else:
 
             txt_response = usr_language_array['TXT_NO_ETH_WALLET']
 
-    # from "MENU_DEL_ETH_WALLET" page recieve inline ---->  process delete wallet from BD
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    # from "MENU_DEL_ETH_WALLET" page receive inline del menu ---->  process delete wallet from BD
     elif user_object['usr_bot_state'] == 'wait_to_del_wallet_address'\
             and update.callback_query:
 
-        query_data = update.callback_query.data
+        address_wallet = update.callback_query.data
 
-        if query_data and utils.is_valid_eth_address(query_data):
+        if address_wallet and utils.is_valid_eth_address(address_wallet):
 
-            if query_data in user_object['usr_wallets']:
+            for db_address_wallet in user_object['usr_wallets']:
 
-                user_object['usr_wallets'].remove(query_data)
+                if address_wallet == db_address_wallet['address']:
 
-                if len(user_object['usr_wallets']) > 0:
+                    user_object['usr_wallets'].remove(db_address_wallet)
 
-                    txt_response = usr_language_array['TXT_DEL_ETH_WALLET']
+                    break
 
-                    keyboard = []
-                    i = 0
+            if len(user_object['usr_wallets']) > 0:
 
-                    for wallet in user_object['usr_wallets']:
-                        keyboard.append([InlineKeyboardButton(
-                            wallet, callback_data=wallet)])
-                        i += 1
+                txt_response = usr_language_array['TXT_DEL_ETH_WALLET']
 
-                    usr_keyboard = InlineKeyboardMarkup(keyboard)
+                keyboard = []
+                i = 0
 
-                else:
+                for db_address_wallet in user_object['usr_wallets']:
 
-                    user_object['usr_bot_state'] = ''
+                    keyboard.append([InlineKeyboardButton(db_address_wallet['address'],
+                                    callback_data=db_address_wallet['address'])])
 
-                    txt_response = usr_language_array['TXT_NO_ETH_WALLET']
+                    i += 1
 
-                    usr_keyboard = ''
+                usr_keyboard = InlineKeyboardMarkup(keyboard)
 
-                mongo.edit_user(user_object)
+            else:
 
-                usr_msg_id_to_edit = update.callback_query.message.message_id
+                user_object['usr_bot_state'] = ''
 
+                usr_keyboard = ''
+                txt_response = usr_language_array['TXT_NO_ETH_WALLET']
+
+            # must do it for both case of if..else
+            mongo.edit_user(user_object)
+
+            usr_msg_id_to_edit = update.callback_query.message.message_id
+
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     # pressed button "MENU_CHECK_ALL_BALANCE" from "Main Menu" page ---->  stay here
     elif usr_language_array['MENU_CHECK_ALL_BALANCE'].upper() == usr_msg_text.upper():
 
         if len(user_object['usr_wallets']) > 0:
 
+            # to notify a user "printing..." on waiting response
+            bot.send_chat_action(chat_id=usr_chat_id, action=ChatAction.TYPING)
+
             txt_response = '💲💲💲 *' + usr_language_array['MENU_CHECK_ALL_BALANCE'] \
                            + ':*\n`-------------------------`\n'
 
             for usr_wallet_address in user_object['usr_wallets']:
-                txt_response += utils.check_address(usr_lang_code, usr_wallet_address)
+
+                txt_response += utils.api_check_balance2(usr_lang_code, usr_wallet_address)
 
         else:
             txt_response = usr_language_array['TXT_NO_ETH_WALLET']
@@ -275,11 +315,7 @@ def text_handler(bot, update):
             user_object['usr_bot_state'] = ''
             mongo.edit_user(user_object)
 
-    elif usr_language_array['MENU_BOT_OPTIONS'].upper() == usr_msg_text.upper():
-
-        txt_response = utils.show_bot_options()
-        usr_keyboard = utils.set_user_usr_keyboard(usr_lang_code)
-
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     # pressed button "MENU_SHARE_BOT" from "Main Menu" page ---->  stay here
     #                                                              with inline menu showing
     elif usr_language_array['MENU_SHARE_BOT'].upper() == usr_msg_text.upper():
@@ -293,6 +329,7 @@ def text_handler(bot, update):
             ],
         )
 
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     # this is a default condition if there is no correct command for the bot
     else:
 
@@ -301,7 +338,12 @@ def text_handler(bot, update):
 
         txt_response = usr_language_array['TXT_USE_KEYBOARD']
 
-    # to send a message for user
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@ sends a message for user @@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
     if update and txt_response:
 
         # this is a case of edit a message (InlineKeyboardMarkup --> InlineKeyboardButton's)

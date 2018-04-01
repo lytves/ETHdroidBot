@@ -26,11 +26,11 @@ class MongoDatabase:
 
     def insert_user(self, usr_tg_id, usr_tg_alias='', usr_lang_code='', usr_bot_state=''):
 
-        self.collection.insert({'usr_tg_id': usr_tg_id,
-                                'usr_tg_alias': usr_tg_alias,
-                                'usr_lang_code': usr_lang_code,
-                                'usr_bot_state': usr_bot_state,
-                                'usr_wallets': ()
+        self.collection.insert({"usr_tg_id": usr_tg_id,
+                                "usr_tg_alias": usr_tg_alias,
+                                "usr_lang_code": usr_lang_code,
+                                "usr_bot_state": usr_bot_state,
+                                "usr_wallets": ()
                                 })
 
     def get_user(self, usr_tg_id):
