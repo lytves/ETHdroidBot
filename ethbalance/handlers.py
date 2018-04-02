@@ -181,7 +181,9 @@ def text_handler(bot, update):
                     # here write balance of new added address ETH and tokens to BD
                     if usr_wallet_api_info:
 
-                        usr_wallet = {"address": usr_new_wallet_address, "balance": 0.0, "tokens": []}
+                        usr_wallet = {"address": usr_new_wallet_address,
+                                      "balance": usr_wallet_api_info['ETH']['balance'],
+                                      "tokens": []}
 
                         # address has a tokens
                         if 'tokens' in usr_wallet_api_info:
@@ -205,7 +207,7 @@ def text_handler(bot, update):
                             bot.send_chat_action(chat_id=usr_chat_id, action=ChatAction.TYPING)
 
                             # check wallet balance now
-                            txt_response += utils.api_check_balance2(usr_lang_code, usr_wallet['address'])
+                            txt_response += utils.text_wallet_info(usr_lang_code, usr_wallet['address'])
 
                             user_object['usr_bot_state'] = ''
                             mongo.edit_user(user_object)
@@ -249,7 +251,7 @@ def text_handler(bot, update):
             txt_response = usr_language_array['TXT_NO_ETH_WALLET']
 
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-    # from "MENU_DEL_ETH_WALLET" page receive inline del menu ---->  process delete wallet from BD
+    # from "MENU_DEL_ETH_WALLET" page with inline "delete menu" ---->  process delete wallet from BD
     elif user_object['usr_bot_state'] == 'wait_to_del_wallet_address'\
             and update.callback_query:
 

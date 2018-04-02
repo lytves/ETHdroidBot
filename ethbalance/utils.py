@@ -118,8 +118,8 @@ def api_check_balance(usr_wallet_address):
         # TODO send here a message to admin to inform about a trouble
 
 
-# the ...
-def api_check_balance2(usr_lang_code, usr_wallet_address):
+# form the text message with individual wallet address information
+def text_wallet_info(usr_lang_code, usr_wallet_address):
 
     global price_ethusd
 
