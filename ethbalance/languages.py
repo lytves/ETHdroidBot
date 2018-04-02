@@ -40,7 +40,7 @@ SPANISH = {'TXT_USE_START_BUTTON': '🚀 ¡Utiliza el comando /start para empeza
            'TXT_SHARE_BOT': '¡Comparte este bot con tus amigos! 👇',
            'TXT_FEEDBACK': 'Escribe tu mensaje para el administrador:',
            'MENU_GO_BACK': 'Atrás',
-           'TXT_ERROR': '😓 Lo siento, ahora no puedo mostarte información. ¡Pruebalo más tarde por favor!',
+           'TXT_ERROR': '😓 Lo siento, ahora no puedo mostarte información. ¡Pruébalo más tarde por favor!',
            'TXT_ADD_ETH_NAME_WALLETS_FULL': '🚫 Está permitido añadir solo ' + str(NUMBER_WALLETS) + ' *carteras de Ethereum*',
            'TXT_ADD_ETH_ADDRESS_WALLET': '➕ Entra la dirección de tu *cartera de Ethereum* 0x...',
            'TXT_ADD_ETH_ADDRESS_WALLET_WRONG': '🚩 Esta *direccíon de Ethereum* no está correcta, pruebalo de nuevo 0x...',

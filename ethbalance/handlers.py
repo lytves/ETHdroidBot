@@ -305,11 +305,12 @@ def text_handler(bot, update):
             bot.send_chat_action(chat_id=usr_chat_id, action=ChatAction.TYPING)
 
             txt_response = '💲💲💲 *' + usr_language_array['MENU_CHECK_ALL_BALANCE'] \
-                           + ':*\n`-------------------------`\n'
+                           + ':*\n`-------------------------`\n' \
+                           + '`#########################`\n'
 
-            for usr_wallet_address in user_object['usr_wallets']:
+            for usr_wallet in user_object['usr_wallets']:
 
-                txt_response += utils.api_check_balance2(usr_lang_code, usr_wallet_address)
+                txt_response += utils.text_wallet_info(usr_lang_code, usr_wallet['address'])
 
         else:
             txt_response = usr_language_array['TXT_NO_ETH_WALLET']

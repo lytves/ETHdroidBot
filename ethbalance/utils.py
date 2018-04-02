@@ -181,7 +181,7 @@ def text_wallet_info(usr_lang_code, usr_wallet_address):
                     ############  TOKEN PRICE
                     str_token_price = ''
 
-                    if type(token['tokenInfo']['price']) is dict:
+                    if type(token['tokenInfo']['price']) is dict and 'rate' in token['tokenInfo']['price']:
 
                         str_token_price = ' `($' + str('%.2f' % (token_balance * Decimal(token['tokenInfo']['price']['rate']))) + ')`'
 
