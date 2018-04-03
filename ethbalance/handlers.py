@@ -259,7 +259,7 @@ def text_handler(bot, update):
 
         if address_wallet and utils.is_valid_eth_address(address_wallet):
 
-            for db_address_wallet in user_object['usr_wallets']:
+            for db_address_wallet in user_object['usr_wallets'][:]:
 
                 if address_wallet == db_address_wallet['address']:
 
