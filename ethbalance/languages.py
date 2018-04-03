@@ -50,11 +50,10 @@ SPANISH = {'TXT_USE_START_BUTTON': '🚀 ¡Utiliza el comando /start para empeza
            'LINK_TEXT_SHARE_BOT': '¡Siempre estarás controlando tu saldo de Ethereum y ERC tokens en tus carteras! 👍',
            'TXT_ETH_ADDRESS': '📌 *Ethereum dirección:* ',
            'TXT_ETH_TOKENS': '📎 *Tokens ERC:*',
-           'TXT_ETH_TOKENS_EMPTY': '📎 *Aún no hay tokens ERC*',
+           'TXT_ETH_TOKENS_EMPTY': '📎 *Aún no hay ERC tokens*',
            'TXT_DEL_ETH_WALLET': '❌ Elige una *cartera de Ethereum* para borrar:',
            'TXT_NO_ETH_WALLET': 'ℹ ¡No tienes ninguna *cartera de Ethereum*!',
-           'TXT_START_MSG': '👽 ¡Hola! Soy tu Ethereum Balance Bot, te ayudo para que siempre sepas '
-                            'el saldo de Ethereum y ERC tokens en tus carteras.'}
+           'TXT_START_MSG': '👽 ¡Hola! Soy tu Ethereum Balance Bot, te ayudo para que siempre sepas el saldo de Ethereum y ERC tokens en tus carteras.'}
 
 # English language (by default)
 ENGLISH = {'TXT_USE_START_BUTTON': '🚀 Use the command /start to bot\'s work!',
