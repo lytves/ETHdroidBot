@@ -175,22 +175,25 @@ def text_handler(bot, update):
 
                 if not exist_db_address_wallet:
 
+                    # to notify a user "printing..." on waiting response
+                    bot.send_chat_action(chat_id=usr_chat_id, action=ChatAction.TYPING)
+
                     # the response from API with address all info
-                    usr_wallet_api_info = utils.api_check_balance(usr_new_wallet_address)
+                    usr_wallet_api_dict = utils.api_check_balance(usr_new_wallet_address)
 
                     # here write balance of new added address ETH and tokens to BD
-                    if usr_wallet_api_info:
+                    if usr_wallet_api_dict:
 
                         usr_wallet = {"address": usr_new_wallet_address,
-                                      "balance": usr_wallet_api_info['ETH']['balance'],
+                                      "balance": usr_wallet_api_dict['ETH']['balance'],
                                       "tokens": []}
 
                         # address has a tokens
-                        if 'tokens' in usr_wallet_api_info:
+                        if 'tokens' in usr_wallet_api_dict:
 
                             tokens = []
 
-                            for token in usr_wallet_api_info['tokens']:
+                            for token in usr_wallet_api_dict['tokens']:
 
                                 tokens.append({"address": token['tokenInfo']['address'],
                                                "symbol": token['tokenInfo']['symbol'],
@@ -199,18 +202,15 @@ def text_handler(bot, update):
 
                             usr_wallet.update({"tokens": tokens})
 
-                            user_object['usr_wallets'].append(usr_wallet)
+                        # general block code if wallet added
+                        txt_response = usr_language_array['TXT_ADD_ETH_ADDRESS_WALLET_ADDED']
 
-                            txt_response = usr_language_array['TXT_ADD_ETH_ADDRESS_WALLET_ADDED']
+                        # check wallet balance now - pass here the response from API completed
+                        txt_response += utils.text_wallet_info(usr_lang_code, usr_wallet_api_dict)
 
-                            # to notify a user "printing..." on waiting response
-                            bot.send_chat_action(chat_id=usr_chat_id, action=ChatAction.TYPING)
-
-                            # check wallet balance now
-                            txt_response += utils.text_wallet_info(usr_lang_code, usr_wallet['address'])
-
-                            user_object['usr_bot_state'] = ''
-                            mongo.edit_user(user_object)
+                        user_object['usr_wallets'].append(usr_wallet)
+                        user_object['usr_bot_state'] = ''
+                        mongo.edit_user(user_object)
 
             else:
 
@@ -310,7 +310,14 @@ def text_handler(bot, update):
 
             for usr_wallet in user_object['usr_wallets']:
 
-                txt_response += utils.text_wallet_info(usr_lang_code, usr_wallet['address'])
+                # the response from API with address all info
+                usr_wallet_api_dict = utils.api_check_balance(usr_wallet['address'])
+
+                # here write balance of new added address ETH and tokens to BD
+                if usr_wallet_api_dict:
+
+                    # check wallet balance now - pass here the response from API completed
+                    txt_response += utils.text_wallet_info(usr_lang_code, usr_wallet_api_dict)
 
         else:
             txt_response = usr_language_array['TXT_NO_ETH_WALLET']

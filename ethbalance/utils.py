@@ -119,111 +119,87 @@ def api_check_balance(usr_wallet_address):
 
 
 # form the text message with individual wallet address information
-def text_wallet_info(usr_lang_code, usr_wallet_address):
+def text_wallet_info(usr_lang_code, usr_wallet_api_dict):
 
     global price_ethusd
 
-    url = ETHPLORER_API_URL.format(usr_wallet_address)
-    response = requests.get(url)
-
-    module_logger.info("API request URL: %s", url)
-
     usr_language_array = set_usr_language_array(usr_lang_code)
 
-    msg_text = ''
+    address = usr_wallet_api_dict['address']
 
-    if response.status_code == requests.codes.ok:
+    str_eth_price = ''
 
-        # extract a json from response to a class "dict"
-        response_dict = response.json()
+    # check ETH balance & price
+    eth_balance = round(Decimal(usr_wallet_api_dict['ETH']['balance']), 9).normalize()
 
-        if 'error' in response_dict:
-            errors = response_dict['error']
-            module_logger.error('api.ethplorer.io error! %s', errors)
+    if price_ethusd:
 
-            msg_text = '\n' + usr_language_array['TXT_ERROR'] + '\n`' + errors['message'] + '`'
+        str_eth_price = ' `($' + str('%.2f' % (eth_balance * price_ethusd)) + ')`'
 
-        else:
-            address = str(response_dict['address'])
+    # check all tokens balance & price
+    if 'tokens' in usr_wallet_api_dict:
 
-            # check ETH balance & price
-            eth_balance = round(Decimal(response_dict['ETH']['balance']), 9).normalize()
+        all_tokens_balance = '\n' + usr_language_array['TXT_ETH_TOKENS']
 
-            str_eth_price = ''
+        for token in usr_wallet_api_dict['tokens']:
 
-            if price_ethusd:
+            ############  TOKEN BALANCE
+            # to convert a balance into a correct form to show
+            token_balance = Decimal(token['balance']) / 10 ** int(token['tokenInfo']['decimals'])
 
-                str_eth_price = ' `($' + str('%.2f' % (eth_balance * price_ethusd)) + ')`'
+            if (token_balance * 1000 - int(token_balance * 1000)) == 0:
 
-            # check all tokens balance & price
-            if 'tokens' in response_dict:
+                # token_balance = '%.2f' % token_balance
+                str_token_balance = str(token_balance)
 
-                all_tokens_balance = '\n' + usr_language_array['TXT_ETH_TOKENS']
-
-                for token in response_dict['tokens']:
-
-                    ############  TOKEN BALANCE
-                    # to convert a balance into a correct form to show
-                    token_balance = Decimal(token['balance']) / 10 ** int(token['tokenInfo']['decimals'])
-
-                    if (token_balance * 1000 - int(token_balance * 1000)) == 0:
-
-                        # token_balance = '%.2f' % token_balance
-                        str_token_balance = str(token_balance)
-
-                        str_token_balance = str_token_balance.rstrip('0').rstrip('.')\
-                            if '.' in str_token_balance else str_token_balance
-
-                    else:
-
-                        str_token_balance = str(round(token_balance,9)).rstrip('0')
-
-                    ############  TOKEN PRICE
-                    str_token_price = ''
-
-                    if type(token['tokenInfo']['price']) is dict and 'rate' in token['tokenInfo']['price']:
-
-                        str_token_price = ' `($' + str('%.2f' % (token_balance * Decimal(token['tokenInfo']['price']['rate']))) + ')`'
-
-                    ############  TOKEN NAME
-                    if token['tokenInfo']['name']:
-
-                        str_token_name = token['tokenInfo']['name']
-
-                    else:
-
-                        str_token_name = '...'
-
-                    ############  TOKEN SYMBOL
-                    if token['tokenInfo']['symbol']:
-
-                        str_token_symbol = token['tokenInfo']['symbol']
-
-                    else:
-
-                        str_token_symbol = '...'
-
-                    ############  FINAL ONE TOKEN STRING INFORMTION
-                    all_tokens_balance += '\n`' + str_token_name\
-                                          + '` (*' + str_token_symbol + '*): '\
-                                          + str_token_balance + str_token_price
+                str_token_balance = str_token_balance.rstrip('0').rstrip('.')\
+                    if '.' in str_token_balance else str_token_balance
 
             else:
 
-                all_tokens_balance = '\n' + usr_language_array['TXT_ETH_TOKENS_EMPTY']
+                str_token_balance = str(round(token_balance,9)).rstrip('0')
 
-            # to show 6 characters from start and from end of the address
-            msg_text = '\n' + usr_language_array['TXT_ETH_ADDRESS']\
-                       + '*' + address[:6] + '....' + address[-6:]\
-                       + '*\n`Ethereum` (*ETH*): '\
-                       + str(eth_balance) + str_eth_price\
-                       + '\n' + all_tokens_balance + \
-                       '\n`-------------------------`\n'
+            ############  TOKEN PRICE
+            str_token_price = ''
+
+            if type(token['tokenInfo']['price']) is dict and 'rate' in token['tokenInfo']['price']:
+
+                str_token_price = ' `($' + str('%.2f' % (token_balance * Decimal(token['tokenInfo']['price']['rate']))) + ')`'
+
+            ############  TOKEN NAME
+            if token['tokenInfo']['name']:
+
+                str_token_name = token['tokenInfo']['name']
+
+            else:
+
+                str_token_name = '...'
+
+            ############  TOKEN SYMBOL
+            if token['tokenInfo']['symbol']:
+
+                str_token_symbol = token['tokenInfo']['symbol']
+
+            else:
+
+                str_token_symbol = '...'
+
+            ############  FINAL ONE TOKEN STRING INFORMTION
+            all_tokens_balance += '\n`' + str_token_name\
+                                  + '` (*' + str_token_symbol + '*): '\
+                                  + str_token_balance + str_token_price
 
     else:
 
-        module_logger.error('Error while request API: "%s". Error code: "%s"' % (url, response.status_code))
-        # TODO send here a message to admin to inform about a trouble
+        all_tokens_balance = '\n' + usr_language_array['TXT_ETH_TOKENS_EMPTY']
+
+    # to show 6 characters from start and from end of the address
+    msg_text = '\n' + usr_language_array['TXT_ETH_ADDRESS']\
+               + '*' + address[:6] + '....' + address[-6:]\
+               + '*\n`Ethereum` (*ETH*): '\
+               + str(eth_balance) + str_eth_price\
+               + '\n' + all_tokens_balance + \
+               '\n`-------------------------`\n'
 
     return msg_text
 
