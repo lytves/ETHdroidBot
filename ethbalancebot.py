@@ -40,7 +40,7 @@ def main():
     # here put the jobs for the bot
     job_queue = updater.job_queue
     # checked ETHEREUM price each 30sec, from 5sec of the bot's start
-    job_queue.run_repeating(api_check_eth_price, 30, 5)
+    job_queue.run_repeating(api_check_eth_price, 60, 5)
 
 
     ####################### bot's service handlers
