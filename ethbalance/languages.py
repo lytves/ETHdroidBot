@@ -25,6 +25,7 @@ RUSSIAN = {'TXT_USE_START_BUTTON': '🚀 Используй команду /star
            'TXT_ETH_TOKENS_EMPTY': '📎 *Нет ERC токенов*',
            'TXT_DEL_ETH_WALLET': '❌ Выбери *Ethereum кошелёк* для удаления:',
            'TXT_NO_ETH_WALLET': 'ℹ Нет ни одного *Ethereum кошелька*!',
+           'TXT_WALLET_UPDATES': '👉 Изменение баланса',
            'TXT_START_MSG': '👽 Привет, я твой Эфириум Баланс Бот! Помогу тебе быть в курсе '
                             'актуального баланса Эфириум и ERC токенов на твоих кошельках.'}
 
@@ -53,6 +54,7 @@ SPANISH = {'TXT_USE_START_BUTTON': '🚀 ¡Utiliza el comando /start para empeza
            'TXT_ETH_TOKENS_EMPTY': '📎 *Aún no hay ERC tokens*',
            'TXT_DEL_ETH_WALLET': '❌ Elige una *cartera de Ethereum* para borrar:',
            'TXT_NO_ETH_WALLET': 'ℹ ¡No tienes ninguna *cartera de Ethereum*!',
+           'TXT_WALLET_UPDATES': '👉 Saldo se ha cambiado',
            'TXT_START_MSG': '👽 ¡Hola! Soy tu Ethereum Balance Bot, te ayudo para que siempre sepas el saldo de Ethereum y ERC tokens en tus carteras.'}
 
 # English language (by default)
@@ -80,5 +82,6 @@ ENGLISH = {'TXT_USE_START_BUTTON': '🚀 Use the command /start to bot\'s work!'
            'TXT_ETH_TOKENS_EMPTY': '📎 *There is not any token ERC yet*',
            'TXT_DEL_ETH_WALLET': '❌ Choose a *Ethereum wallet* for delete:',
            'TXT_NO_ETH_WALLET': 'ℹ There is no *Ethereum wallet*!',
+           'TXT_WALLET_UPDATES': '👉 Balance changed',
            'TXT_START_MSG': '👽 Hello! I am your Ethereum Balance Bot, I will help you '
                             'to control the balance of Ethereum and ERC tokens on yours wallets.'}
