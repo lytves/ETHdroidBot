@@ -305,10 +305,10 @@ def text_handler(bot, update):
             bot.send_chat_action(chat_id=usr_chat_id, action=ChatAction.TYPING)
 
             txt_response = '💲💲💲 *' + usr_language_array['MENU_CHECK_ALL_BALANCE'] \
-                           + ':*\n`-------------------------`\n' \
-                           + '`#########################`\n'
+                           + ':*\n`-------------------------`'
 
-            for usr_wallet in user_object['usr_wallets']:
+            i = 0
+            for usr_wallet in user_object['usr_wallets'][:]:
 
                 # the response from API with address all info
                 usr_wallet_api_dict = utils.api_check_balance(usr_wallet['address'])
@@ -319,11 +319,27 @@ def text_handler(bot, update):
                     # check wallet balance now - pass here the response from API completed
                     txt_response += utils.text_wallet_info(usr_lang_code, usr_wallet_api_dict)
 
+                    eth_wallet_changes = utils.eth_wallet_changes(usr_wallet, usr_wallet_api_dict)
+
+                    # use case of there is changes in wallet balances
+                    if eth_wallet_changes['wallet_changes']:
+
+                        # update BD wallet info
+                        user_object['usr_wallets'][i] = eth_wallet_changes['usr_wallet']
+
+                        # show wallet changed balances of ETH and tokens
+                        txt_response += utils.text_wallet_changes(usr_lang_code, eth_wallet_changes['wallet_changes'])
+
+                # here is counter iteration !!!
+                i += 1
+
         else:
+
             txt_response = usr_language_array['TXT_NO_ETH_WALLET']
 
-            user_object['usr_bot_state'] = ''
-            mongo.edit_user(user_object)
+        # must do it for both case of if..else
+        user_object['usr_bot_state'] = ''
+        mongo.edit_user(user_object)
 
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     # pressed button "MENU_SHARE_BOT" from "Main Menu" page ---->  stay here
@@ -338,6 +354,9 @@ def text_handler(bot, update):
                                       switch_inline_query=usr_language_array['LINK_TEXT_SHARE_BOT'])]
             ],
         )
+
+        user_object['usr_bot_state'] = ''
+        mongo.edit_user(user_object)
 
     # @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
     # this is a default condition if there is no correct command for the bot

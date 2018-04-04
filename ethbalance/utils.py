@@ -1,6 +1,6 @@
+import re
 import requests
 import logging
-import re
 
 from decimal import Decimal
 
@@ -14,6 +14,10 @@ logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(level
 module_logger = logging.getLogger(__name__)
 
 # start logging to the file with log rotation at midnight of each day
+# import os
+#
+# from logging.handlers import TimedRotatingFileHandler
+#
 # formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s %(message)s')
 # handler = TimedRotatingFileHandler(os.path.dirname(os.path.realpath(__file__)) + '/../ethbalancebot.log',
 #                                    when='midnight',
@@ -199,7 +203,7 @@ def text_wallet_info(usr_lang_code, usr_wallet_api_dict):
                + '*\n`Ethereum` (*ETH*): '\
                + str(eth_balance) + str_eth_price\
                + '\n' + all_tokens_balance + \
-               '\n`-------------------------`\n'
+               '\n`-------------------------`'
 
     return msg_text
 
@@ -232,3 +236,166 @@ def api_check_eth_price(bot, job):
 
         module_logger.error('Error while request ETHERSCAN.io API. Error code: "%s"' % (response.json()['message']))
         # TODO send here a message to admin to inform about a trouble
+
+
+# to compare state of ETH balance and tokens an ethereum address
+def eth_wallet_changes(usr_wallet, usr_wallet_api_dict):
+
+    wallet_changes = []
+
+    # tested OK: to check ETH balance
+    if usr_wallet_api_dict['ETH']['balance'] != usr_wallet['balance']:
+
+        wallet_changes.append({'symbol': 'ETH',
+                        'old_balance': usr_wallet['balance'],
+                        'new_balance': usr_wallet_api_dict['ETH']['balance']})
+
+        #############################################    UPDATE  initial received usr_wallet object
+        usr_wallet.update({'balance': usr_wallet_api_dict['ETH']['balance']})
+
+    # to check TOKENS balance
+    if 'tokens' in usr_wallet_api_dict:
+
+        # tested OK: if BD-wallet already has some tokens
+        if len(usr_wallet['tokens']) > 0:
+
+            new_wallet_bd_tokens =[]
+
+            # to create new token's list to compare with old token's list then
+            # and update it to BD then
+            for token_response in usr_wallet_api_dict['tokens']:
+                new_wallet_bd_tokens.append({'address': token_response['tokenInfo']['address'],
+                                             'symbol': token_response['tokenInfo']['symbol'],
+                                             'decimals': token_response['tokenInfo']['decimals'],
+                                             'balance': token_response['balance']})
+
+            # it's my pain ---- START - is is a hard compare logic to show token's difference
+            for new_token in new_wallet_bd_tokens:
+
+                # use case: it is a token which balance was changed
+                if any(d['address'] == new_token['address'] and d['balance'] != new_token['balance'] for d in usr_wallet['tokens']):
+
+                    wallet_changes.append({'symbol': new_token['symbol'],
+                                    'old_balance': [balance['balance'] for balance in usr_wallet['tokens'] if balance['address'] == new_token['address']][0],
+                                    'new_balance': new_token['balance'],
+                                    'decimals': new_token['decimals']})
+
+                # use case: it is a new token in the api wallet token's list
+                elif not any(d['address'] == new_token['address'] for d in usr_wallet['tokens']):
+
+                    wallet_changes.append({'symbol': new_token['symbol'],
+                                    'old_balance': 0,
+                                    'new_balance': new_token['balance'],
+                                    'decimals': new_token['decimals']})
+
+            # use case: for token which was deleted from BD-wallet token's list
+            for old in usr_wallet['tokens']:
+
+                if not any(d['address'] == old['address'] for d in new_wallet_bd_tokens):
+                    wallet_changes.append({'symbol': old['symbol'],
+                                    'old_balance': old['balance'],
+                                    'new_balance': 0,
+                                    'decimals': old['decimals']})
+
+            # it's my pain ---- END
+
+            # after all tokens changes old token's array to update it then
+            usr_wallet['tokens'] = new_wallet_bd_tokens
+
+        # tested OK: use case: if BD-wallet didn't have any token yet
+        else:
+
+            for token_response in usr_wallet_api_dict['tokens']:
+
+                wallet_changes.append({'symbol': token_response['tokenInfo']['symbol'],
+                                'old_balance': 0.0,
+                                'new_balance': token_response['balance'],
+                                'decimals': token_response['tokenInfo']['decimals']})
+
+                usr_wallet['tokens'].append({'address': token_response['tokenInfo']['address'],
+                                             'symbol': token_response['tokenInfo']['symbol'],
+                                             'decimals': token_response['tokenInfo']['decimals'],
+                                             'balance': token_response['balance']})
+
+    # tested OK: use case: if the api wallet already doesn't have any token)
+    else:
+
+        if 'tokens' in usr_wallet:
+
+            for token_DB in usr_wallet['tokens']:
+
+                wallet_changes.append({'symbol': token_DB['symbol'],
+                                'old_balance': token_DB['balance'],
+                                'new_balance': 0.0,
+                                'decimals': token_DB['decimals']})
+
+            del usr_wallet['tokens'][:]
+
+    return {'usr_wallet': usr_wallet, 'wallet_changes': wallet_changes}
+
+
+# form the text message with only change wallet balances
+def text_wallet_changes(usr_lang_code, wallet_changes, wallet_address=''):
+
+    usr_language_array = set_usr_language_array(usr_lang_code)
+
+    if wallet_address:
+
+        msg_text = '\n' + usr_language_array['TXT_WALLET_UPDATES'] \
+                    + '\n' + usr_language_array['TXT_ETH_ADDRESS'] \
+                    + '*' + wallet_address[:6] + '....' + wallet_address[-6:] \
+                    + '\n`-------------------------`\n'
+
+    else:
+
+        msg_text = '\n' + usr_language_array['TXT_WALLET_UPDATES']
+
+    # check all changes items (ETH and/or tokens)
+    for item in wallet_changes:
+
+        # balance of ETH is counted in different form without use of 'decimals'
+        if item['symbol'] == 'ETH':
+
+            old_eth_balance = round(Decimal(item['old_balance']), 9).normalize()
+            new_eth_balance = round(Decimal(item['new_balance']), 9).normalize()
+
+            msg_text += '\n*' + item['symbol'] + '*: ' + '`' + str(old_eth_balance)\
+                        + ' => ' + str(new_eth_balance) + '`'
+
+        # balances of other tokens
+        else:
+
+            ######## old_balance
+            old_token_balance = Decimal(item['old_balance']) / 10 ** int(item['decimals'])
+
+            if (old_token_balance * 1000 - int(old_token_balance * 1000)) == 0:
+
+                # token_balance = '%.2f' % token_balance
+                str_old_token_balance = str(old_token_balance)
+
+                str_old_token_balance = str_old_token_balance.rstrip('0').rstrip('.')\
+                    if '.' in str_old_token_balance else str_old_token_balance
+
+            else:
+
+                str_old_token_balance = str(round(old_token_balance,9)).rstrip('0')
+
+            ######## new_balance
+            new_token_balance = Decimal(item['new_balance']) / 10 ** int(item['decimals'])
+
+            if (new_token_balance * 1000 - int(new_token_balance * 1000)) == 0:
+
+                # token_balance = '%.2f' % token_balance
+                str_new_token_balance = str(new_token_balance)
+
+                str_new_token_balance = str_new_token_balance.rstrip('0').rstrip('.') \
+                    if '.' in str_new_token_balance else str_new_token_balance
+
+            else:
+
+                str_new_token_balance = str(round(new_token_balance, 9)).rstrip('0')
+
+            msg_text += '\n*' + item['symbol'] + '*: ' + '`' + str_old_token_balance \
+                        + ' => ' + str_new_token_balance + '`'
+
+    return msg_text + '\n`-------------------------`\n'
