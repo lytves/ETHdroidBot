@@ -21,4 +21,4 @@ LENGTH_WALLET_ADDRESS = 42
 
 # put your DB name and collection name here
 MONGO_DB_NAME = 'put_your_db_name_here'
-MONGO_DB_COLLECTION = 'put_your_db_cokkection_here'
+MONGO_DB_COLLECTION = 'put_your_db_connection_here'
