@@ -1,4 +1,4 @@
-from ethbalance.config import NUMBER_WALLETS
+from ethdroid.config import NUMBER_WALLETS
 
 # Russian language ('ru' and 'ru-RU')
 RUSSIAN = {'TXT_USE_START_BUTTON': '🚀 Используй команду /start для начала работы с ботом!',
@@ -26,7 +26,7 @@ RUSSIAN = {'TXT_USE_START_BUTTON': '🚀 Используй команду /star
            'TXT_DEL_ETH_WALLET': '❌ Выбери *Ethereum кошелёк* для удаления:',
            'TXT_NO_ETH_WALLET': 'ℹ Нет ни одного *Ethereum кошелька*!',
            'TXT_WALLET_UPDATES': '👉 Изменение баланса',
-           'TXT_START_MSG': '👽 Привет, я твой Эфириум Баланс Бот! Помогу тебе быть в курсе '
+           'TXT_START_MSG': '👽 Привет, я твой ETHdroid Bot! Я помогу тебе быть в курсе '
                             'актуального баланса Эфириум и ERC токенов на твоих кошельках.'}
 
 # Spanish language ('es' and 'es-ES')
@@ -55,7 +55,7 @@ SPANISH = {'TXT_USE_START_BUTTON': '🚀 ¡Utiliza el comando /start para empeza
            'TXT_DEL_ETH_WALLET': '❌ Elige una *cartera de Ethereum* para borrar:',
            'TXT_NO_ETH_WALLET': 'ℹ ¡No tienes ninguna *cartera de Ethereum*!',
            'TXT_WALLET_UPDATES': '👉 Saldo se ha cambiado',
-           'TXT_START_MSG': '👽 ¡Hola! Soy tu Ethereum Balance Bot, te ayudo para que siempre sepas el saldo de Ethereum y ERC tokens en tus carteras.'}
+           'TXT_START_MSG': '👽 ¡Hola! Soy tu ETHdroid Bot, te ayudo para que siempre sepas el saldo de Ethereum y ERC tokens en tus carteras.'}
 
 # English language (by default)
 ENGLISH = {'TXT_USE_START_BUTTON': '🚀 Use the command /start to bot\'s work!',
@@ -83,5 +83,5 @@ ENGLISH = {'TXT_USE_START_BUTTON': '🚀 Use the command /start to bot\'s work!'
            'TXT_DEL_ETH_WALLET': '❌ Choose a *Ethereum wallet* for delete:',
            'TXT_NO_ETH_WALLET': 'ℹ There is no *Ethereum wallet*!',
            'TXT_WALLET_UPDATES': '👉 Balance changed',
-           'TXT_START_MSG': '👽 Hello! I am your Ethereum Balance Bot, I will help you '
+           'TXT_START_MSG': '👽 Hello! I am your ETHdroid Bot, I will help you '
                             'to control the balance of Ethereum and ERC tokens on yours wallets.'}

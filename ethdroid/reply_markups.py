@@ -1,5 +1,5 @@
 from telegram import KeyboardButton, ReplyKeyboardMarkup
-from ethbalance.languages import *
+from ethdroid.languages import *
 
 ################   Main Menu Keyboard   ################
 keyboard_ru = [[KeyboardButton(RUSSIAN['MENU_CHECK_ALL_BALANCE']), KeyboardButton(RUSSIAN['MENU_ADD_ETH_WALLET'])],

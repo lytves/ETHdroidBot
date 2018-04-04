@@ -5,14 +5,14 @@ from threading import Thread
 from telegram.ext import Updater
 from telegram.ext import CommandHandler, MessageHandler, CallbackQueryHandler, Filters
 
-from ethbalance.config import TOKEN_BOT, YOUR_TELEGRAM_ALIAS
-from ethbalance.handlers import start, admin_say, error, text_handler
+from ethdroid.config import TOKEN_BOT, YOUR_TELEGRAM_ALIAS
+from ethdroid.handlers import start, admin_say, error, text_handler
 
-from ethbalance.utils import module_logger, api_check_eth_price
+from ethdroid.utils import module_logger, api_check_eth_price
 
 
 def main():
-    module_logger.info("Start the @ETHbalanceBot bot!")
+    module_logger.info("Start the @ETHdroidBot bot!")
 
     # create an object "bot"
     updater = Updater(token=TOKEN_BOT)
@@ -68,7 +68,7 @@ def main():
     # Start the Bot set_webhook() method
     # put your server IP adress instead 0.0.0.0
     # and see this page https://github.com/python-telegram-bot/python-telegram-bot/wiki/Webhooks
-    # updater.start_webhook(listen='127.0.0.1', port=5002, url_path=TOKEN_BOT)
+    # updater.start_webhook(listen='127.0.0.1', port=5005, url_path=TOKEN_BOT)
     # updater.bot.set_webhook(url='https://0.0.0.0/' + TOKEN_BOT,
     #                   certificate=open('/etc/nginx/PUBLIC.pem', 'rb'))
 

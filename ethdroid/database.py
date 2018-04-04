@@ -1,7 +1,7 @@
 from pymongo import MongoClient
 from pymongo.errors import ServerSelectionTimeoutError, ConnectionFailure
 
-from ethbalance.config import MONGO_DB_NAME, MONGO_DB_COLLECTION
+from ethdroid.config import MONGO_DB_NAME, MONGO_DB_COLLECTION
 
 
 class MongoDatabase:

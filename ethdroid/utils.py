@@ -4,9 +4,9 @@ import logging
 
 from decimal import Decimal
 
-from ethbalance.config import ETHPLORER_API_URL, ETHERSCAN_API_URL, LENGTH_WALLET_ADDRESS
-from ethbalance.languages import *
-from ethbalance.reply_markups import reply_markup_en, reply_markup_es, reply_markup_ru, \
+from ethdroid.config import ETHPLORER_API_URL, ETHERSCAN_API_URL, LENGTH_WALLET_ADDRESS
+from ethdroid.languages import *
+from ethdroid.reply_markups import reply_markup_en, reply_markup_es, reply_markup_ru, \
     reply_markup_back_en, reply_markup_back_es, reply_markup_back_ru
 
 # start logging to the file of current directory or º it to console
@@ -19,7 +19,7 @@ module_logger = logging.getLogger(__name__)
 # from logging.handlers import TimedRotatingFileHandler
 #
 # formatter = logging.Formatter('%(asctime)s %(name)s %(levelname)s %(message)s')
-# handler = TimedRotatingFileHandler(os.path.dirname(os.path.realpath(__file__)) + '/../ethbalancebot.log',
+# handler = TimedRotatingFileHandler(os.path.dirname(os.path.realpath(__file__)) + '/../ethdroidbot.log',
 #                                    when='midnight',
 #                                    backupCount=10)
 # handler.setFormatter(formatter)

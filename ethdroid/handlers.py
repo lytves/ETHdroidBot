@@ -1,7 +1,7 @@
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ChatAction
 
-import ethbalance.utils as utils
-from ethbalance.database import MongoDatabase
+import ethdroid.utils as utils
+from ethdroid.database import MongoDatabase
 
 
 # bot's update error handler
