@@ -85,7 +85,12 @@ def is_full_wallets_list(user_object):
 # the functions for logging handlers
 def send_to_log(update, msg_type='command'):
 
-    if update:
+    if msg_type == 'scheduler':
+
+        module_logger.info("Scheduler wallets balance changes start")
+
+    elif update:
+
         usr_message = str(update.effective_message.text) if update.effective_message.text else 'None'
 
         usr_name = update.effective_message.from_user.first_name
@@ -276,26 +281,26 @@ def eth_wallet_changes(usr_wallet, usr_wallet_api_dict):
                 if any(d['address'] == new_token['address'] and d['balance'] != new_token['balance'] for d in usr_wallet['tokens']):
 
                     wallet_changes.append({'symbol': new_token['symbol'],
-                                    'old_balance': [balance['balance'] for balance in usr_wallet['tokens'] if balance['address'] == new_token['address']][0],
-                                    'new_balance': new_token['balance'],
-                                    'decimals': new_token['decimals']})
+                                          'old_balance': [balance['balance'] for balance in usr_wallet['tokens'] if balance['address'] == new_token['address']][0],
+                                           'new_balance': new_token['balance'],
+                                           'decimals': new_token['decimals']})
 
                 # use case: it is a new token in the api wallet token's list
                 elif not any(d['address'] == new_token['address'] for d in usr_wallet['tokens']):
 
                     wallet_changes.append({'symbol': new_token['symbol'],
-                                    'old_balance': 0,
-                                    'new_balance': new_token['balance'],
-                                    'decimals': new_token['decimals']})
+                                          'old_balance': 0,
+                                           'new_balance': new_token['balance'],
+                                           'decimals': new_token['decimals']})
 
             # use case: for token which was deleted from BD-wallet token's list
             for old in usr_wallet['tokens']:
 
                 if not any(d['address'] == old['address'] for d in new_wallet_bd_tokens):
                     wallet_changes.append({'symbol': old['symbol'],
-                                    'old_balance': old['balance'],
-                                    'new_balance': 0,
-                                    'decimals': old['decimals']})
+                                          'old_balance': old['balance'],
+                                           'new_balance': 0,
+                                           'decimals': old['decimals']})
 
             # it's my pain ---- END
 
@@ -308,9 +313,9 @@ def eth_wallet_changes(usr_wallet, usr_wallet_api_dict):
             for token_response in usr_wallet_api_dict['tokens']:
 
                 wallet_changes.append({'symbol': token_response['tokenInfo']['symbol'],
-                                'old_balance': 0.0,
-                                'new_balance': token_response['balance'],
-                                'decimals': token_response['tokenInfo']['decimals']})
+                                      'old_balance': 0.0,
+                                       'new_balance': token_response['balance'],
+                                       'decimals': token_response['tokenInfo']['decimals']})
 
                 usr_wallet['tokens'].append({'address': token_response['tokenInfo']['address'],
                                              'symbol': token_response['tokenInfo']['symbol'],
@@ -325,9 +330,9 @@ def eth_wallet_changes(usr_wallet, usr_wallet_api_dict):
             for token_DB in usr_wallet['tokens']:
 
                 wallet_changes.append({'symbol': token_DB['symbol'],
-                                'old_balance': token_DB['balance'],
-                                'new_balance': 0.0,
-                                'decimals': token_DB['decimals']})
+                                      'old_balance': token_DB['balance'],
+                                       'new_balance': 0.0,
+                                       'decimals': token_DB['decimals']})
 
             del usr_wallet['tokens'][:]
 
@@ -335,16 +340,15 @@ def eth_wallet_changes(usr_wallet, usr_wallet_api_dict):
 
 
 # form the text message with only change wallet balances
-def text_wallet_changes(usr_lang_code, wallet_changes, wallet_address=''):
+def text_wallet_changes(usr_language_array, wallet_changes, wallet_address=''):
 
-    usr_language_array = set_usr_language_array(usr_lang_code)
-
+    # wallet_address is used to show wallet info with its address,
+    # is a use case of scheduler request of wallet changes
     if wallet_address:
 
-        msg_text = '\n' + usr_language_array['TXT_WALLET_UPDATES'] \
-                    + '\n' + usr_language_array['TXT_ETH_ADDRESS'] \
+        msg_text = '\n' + usr_language_array['TXT_ETH_ADDRESS'] \
                     + '*' + wallet_address[:6] + '....' + wallet_address[-6:] \
-                    + '\n`-------------------------`\n'
+                    + '*\n`-------------------------`'
 
     else:
 

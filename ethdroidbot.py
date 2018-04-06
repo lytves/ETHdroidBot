@@ -6,7 +6,7 @@ from telegram.ext import Updater
 from telegram.ext import CommandHandler, MessageHandler, CallbackQueryHandler, Filters
 
 from ethdroid.config import TOKEN_BOT, YOUR_TELEGRAM_ALIAS
-from ethdroid.handlers import start, admin_say, error, text_handler
+from ethdroid.handlers import start, admin_say, error, text_handler, scheduler_balance_changes_check
 
 from ethdroid.utils import module_logger, api_check_eth_price
 
@@ -39,9 +39,10 @@ def main():
 
     # here put the jobs for the bot
     job_queue = updater.job_queue
-    # checked ETHEREUM price each 30sec, from 5sec of the bot's start
+    # check ETHEREUM price each 30sec, from 5sec of the bot's start
     job_queue.run_repeating(api_check_eth_price, 60, 5)
-
+    # check wallets balance changes each 5 min, from 15 sec of the bot's start
+    job_queue.run_repeating(scheduler_balance_changes_check, 300, 15)
 
     ####################### bot's service handlers
     def stop_and_restart():

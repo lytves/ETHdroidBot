@@ -41,3 +41,8 @@ class MongoDatabase:
     def edit_user(self, user):
 
         self.collection.save(user)
+
+    def get_all_users(self):
+
+        users = self.collection.find()
+        return users

@@ -310,25 +310,26 @@ def text_handler(bot, update):
             i = 0
             for usr_wallet in user_object['usr_wallets'][:]:
 
-                # the response from API with address all info
+                # the  API request to receive wallet actual balance info
                 usr_wallet_api_dict = utils.api_check_balance(usr_wallet['address'])
 
                 # here write balance of new added address ETH and tokens to BD
                 if usr_wallet_api_dict:
 
-                    # check wallet balance now - pass here the response from API completed
+                    # check all balances of the each wallet address in txt form - pass here the response from API completed
                     txt_response += utils.text_wallet_info(usr_lang_code, usr_wallet_api_dict)
 
+                    # search changes in the wallets using actual info and DB infp
                     eth_wallet_changes = utils.eth_wallet_changes(usr_wallet, usr_wallet_api_dict)
 
-                    # use case of there is changes in wallet balances
+                    # use case of - there is changes in wallet balances
                     if eth_wallet_changes['wallet_changes']:
 
                         # update BD wallet info
                         user_object['usr_wallets'][i] = eth_wallet_changes['usr_wallet']
 
                         # show wallet changed balances of ETH and tokens
-                        txt_response += utils.text_wallet_changes(usr_lang_code, eth_wallet_changes['wallet_changes'])
+                        txt_response += utils.text_wallet_changes(usr_language_array, eth_wallet_changes['wallet_changes'])
 
                 # here is counter iteration !!!
                 i += 1
@@ -386,3 +387,69 @@ def text_handler(bot, update):
 
             bot.send_message(chat_id=usr_chat_id, text=txt_response,
                              parse_mode="Markdown", reply_markup=usr_keyboard)
+
+
+################################################################################################################
+############################  bot's job - ethplorer API wallets parser handler  ###################################################
+################################################################################################################
+def scheduler_balance_changes_check(bot, update):
+
+    # logging
+    utils.send_to_log(update, 'scheduler')
+
+    # create user object from BD Mongo
+    mongo = MongoDatabase()
+
+    if not mongo.connectionOK:
+        # TODO send a message for admin for DB error
+        return
+
+    # request all users from BD
+    all_users_object = mongo.get_all_users()
+
+    for user_object in all_users_object:
+
+        # check user language from BD to form txt response
+        usr_language_array = utils.set_usr_language_array(user_object['usr_lang_code'])
+
+        txt_response = ''
+        to_update_bd_user = False
+        i = 0
+
+        for usr_wallet in user_object['usr_wallets']:
+
+            # the  API request to receive wallet actual balance info
+            usr_wallet_api_dict = utils.api_check_balance(usr_wallet['address'])
+
+            # here write balance of new added address ETH and tokens to BD
+            if usr_wallet_api_dict:
+
+                # search changes in the wallets using actual info and DB info
+                eth_wallet_changes = utils.eth_wallet_changes(usr_wallet, usr_wallet_api_dict)
+
+                # use case of there is changes in wallet balances
+                if eth_wallet_changes['wallet_changes']:
+
+                    if txt_response == '':
+
+                        txt_response = usr_language_array['TXT_WALLET_UPDATES']
+
+                    # update BD wallet info
+                    user_object['usr_wallets'][i] = eth_wallet_changes['usr_wallet']
+                    to_update_bd_user = True
+
+                    # show wallet changed balances of ETH and tokens
+                    txt_response += utils.text_wallet_changes(usr_language_array,
+                                                              eth_wallet_changes['wallet_changes'],
+                                                              usr_wallet['address'])
+
+                # here is counter iteration !!!
+                i += 1
+
+        if to_update_bd_user:
+
+            mongo.edit_user(user_object)
+
+        if txt_response:
+            bot.send_message(chat_id=user_object['usr_tg_id'], text=txt_response,
+                             parse_mode="Markdown")
