@@ -15,7 +15,7 @@ def main():
     module_logger.info("Start the @ETHdroidBot bot!")
 
     # create an object "bot"
-    updater = Updater(token=TOKEN_BOT)
+    updater = Updater(token=TOKEN_BOT, workers=10)
     dispatcher = updater.dispatcher
 
     # bot's error handler
