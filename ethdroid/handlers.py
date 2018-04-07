@@ -389,7 +389,7 @@ def text_handler(bot, update):
 
         else:
 
-            bot.send_message(chat_id=usr_chat_id, text=txt_response,
+            utils.send_message(bot, chat_id=usr_chat_id, text=txt_response,
                              parse_mode="Markdown", reply_markup=usr_keyboard)
 
 
@@ -456,5 +456,5 @@ def scheduler_balance_changes_check(bot, update):
             mongo.edit_user(user_object)
 
         if txt_response:
-            bot.send_message(chat_id=user_object['usr_tg_id'], text=txt_response,
-                             parse_mode="Markdown")
+            utils.send_message(bot, chat_id=user_object['usr_tg_id'], text=txt_response,
+                               parse_mode="Markdown")

@@ -17,6 +17,9 @@ ETHERSCAN_API_URL = 'https://api.etherscan.io/api?module=stats&action=ethprice&a
 NUMBER_WALLETS = 5
 # ETH address format
 LENGTH_WALLET_ADDRESS = 42
+# to split long send_message (Telegram restrictions 4096 UTF8 characters,
+# to use parse_mode="Markdown" method we must increase it for 1600-1700 characters)
+MAX_MESSAGE_LENGTH = 1600
 
 
 # put your DB name and collection name here

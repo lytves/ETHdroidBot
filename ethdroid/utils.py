@@ -1,15 +1,16 @@
 import re
 import requests
 import logging
+import time
 
 from decimal import Decimal
 
-from ethdroid.config import ETHPLORER_API_URL, ETHERSCAN_API_URL, LENGTH_WALLET_ADDRESS
+from ethdroid.config import ETHPLORER_API_URL, ETHERSCAN_API_URL, LENGTH_WALLET_ADDRESS, MAX_MESSAGE_LENGTH
 from ethdroid.languages import *
 from ethdroid.reply_markups import reply_markup_en, reply_markup_es, reply_markup_ru, \
     reply_markup_back_en, reply_markup_back_es, reply_markup_back_ru
 
-# start logging to the file of current directory or º it to console
+# start logging to the file of current directory or print it to console
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 module_logger = logging.getLogger(__name__)
 
@@ -166,12 +167,13 @@ def text_wallet_info(usr_lang_code, usr_wallet_api_dict):
 
             else:
 
-                str_token_balance = str(round(token_balance,9)).rstrip('0')
+                str_token_balance = str(round(token_balance, 9)).rstrip('0')
 
             ############  TOKEN PRICE
             str_token_price = ''
 
-            if type(token['tokenInfo']['price']) is dict and 'rate' in token['tokenInfo']['price']:
+            if type(token['tokenInfo']['price']) is dict and 'rate' in token['tokenInfo']['price'] \
+                    and token['tokenInfo']['price']['rate']:
 
                 str_token_price = ' `($' + str('%.2f' % (token_balance * Decimal(token['tokenInfo']['price']['rate']))) + ')`'
 
@@ -182,7 +184,7 @@ def text_wallet_info(usr_lang_code, usr_wallet_api_dict):
 
             else:
 
-                str_token_name = '...'
+                str_token_name = eth_address_short(token['tokenInfo']['address'])
 
             ############  TOKEN SYMBOL
             if token['tokenInfo']['symbol']:
@@ -193,7 +195,7 @@ def text_wallet_info(usr_lang_code, usr_wallet_api_dict):
 
                 str_token_symbol = '...'
 
-            ############  FINAL ONE TOKEN STRING INFORMTION
+            ############  FINAL ONE TOKEN STRING INFORMATION
             all_tokens_balance += '\n`' + str_token_name\
                                   + '` (*' + str_token_symbol + '*): '\
                                   + str_token_balance + str_token_price
@@ -202,9 +204,8 @@ def text_wallet_info(usr_lang_code, usr_wallet_api_dict):
 
         all_tokens_balance = '\n' + usr_language_array['TXT_ETH_TOKENS_EMPTY']
 
-    # to show 6 characters from start and from end of the address
     msg_text = '\n' + usr_language_array['TXT_ETH_ADDRESS']\
-               + '*' + address[:6] + '....' + address[-6:]\
+               + '*' + eth_address_short(address)\
                + '*\n`Ethereum` (*ETH*): '\
                + str(eth_balance) + str_eth_price\
                + '\n' + all_tokens_balance + \
@@ -252,8 +253,8 @@ def eth_wallet_changes(usr_wallet, usr_wallet_api_dict):
     if usr_wallet_api_dict['ETH']['balance'] != usr_wallet['balance']:
 
         wallet_changes.append({'symbol': 'ETH',
-                        'old_balance': usr_wallet['balance'],
-                        'new_balance': usr_wallet_api_dict['ETH']['balance']})
+                              'old_balance': usr_wallet['balance'],
+                               'new_balance': usr_wallet_api_dict['ETH']['balance']})
 
         #############################################    UPDATE  initial received usr_wallet object
         usr_wallet.update({'balance': usr_wallet_api_dict['ETH']['balance']})
@@ -264,7 +265,7 @@ def eth_wallet_changes(usr_wallet, usr_wallet_api_dict):
         # tested OK: if BD-wallet already has some tokens
         if len(usr_wallet['tokens']) > 0:
 
-            new_wallet_bd_tokens =[]
+            new_wallet_bd_tokens = []
 
             # to create new token's list to compare with old token's list then
             # and update it to BD then
@@ -347,7 +348,7 @@ def text_wallet_changes(usr_language_array, wallet_changes, wallet_address=''):
     if wallet_address:
 
         msg_text = '\n' + usr_language_array['TXT_ETH_ADDRESS'] \
-                    + '*' + wallet_address[:6] + '....' + wallet_address[-6:] \
+                    + '*' + eth_address_short(wallet_address) \
                     + '*\n`-------------------------`'
 
     else:
@@ -403,3 +404,47 @@ def text_wallet_changes(usr_language_array, wallet_changes, wallet_address=''):
                         + ' => ' + str_new_token_balance + '`'
 
     return msg_text + '\n`-------------------------`\n'
+
+
+# to show only 6 characters from start and from end of the Ethereum (token) address
+def eth_address_short(eth_address):
+
+    return eth_address[:6] + '....' + eth_address[-6:]
+
+
+# to split long message for shorter parters, see github issue:
+# https://github.com/python-telegram-bot/python-telegram-bot/issues/768#issuecomment-368349130
+def send_message(bot, chat_id, text: str, **kwargs):
+
+    if len(text) <= MAX_MESSAGE_LENGTH:
+        return bot.send_message(chat_id, text, **kwargs)
+
+    parts = []
+
+    while len(text) > 0:
+
+        if len(text) > MAX_MESSAGE_LENGTH:
+
+            part = text[:MAX_MESSAGE_LENGTH]
+            first_lnbr = part.rfind('\n')
+
+            if first_lnbr != -1:
+                parts.append(part[:first_lnbr])
+                text = text[first_lnbr:]
+
+            else:
+                parts.append(part)
+                text = text[MAX_MESSAGE_LENGTH:]
+
+        else:
+            parts.append(text)
+            break
+
+    msg = None
+
+    for part in parts:
+
+        msg = bot.send_message(chat_id, part, **kwargs)
+        time.sleep(1)
+
+    return msg  # return only the last message
