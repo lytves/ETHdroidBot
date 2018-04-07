@@ -55,4 +55,4 @@ Bot Settings are in the file **ethdroid/config.py:**
 
 Screenshot of the working bot:
 
-![ETHdroidbot](ethdroidbot.png "ETHdroidbot")
+![ETHdroidbot](ethdroidbot.jpg "ETHdroidbot")
