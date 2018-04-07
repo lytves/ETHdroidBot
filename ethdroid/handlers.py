@@ -308,8 +308,17 @@ def text_handler(bot, update):
             # to notify a user "printing..." on waiting response
             bot.send_chat_action(chat_id=usr_chat_id, action=ChatAction.TYPING)
 
-            txt_response = '💲💲💲 *' + usr_language_array['MENU_CHECK_ALL_BALANCE'] \
-                           + ':*\n`-------------------------`'
+            price_ethereum = ''
+
+            if utils.price_ethusd and utils.price_ethbtc:
+
+                price_ethereum = usr_language_array['TXT_PRICE'] \
+                                 + '`$' + str(utils.price_ethusd) \
+                                 + '` (' + str(utils.price_ethbtc) + ' BTC)' \
+                                 + '\n`-------------------------`\n'
+
+            txt_response = price_ethereum + '💲💲💲 *' + usr_language_array['MENU_CHECK_ALL_BALANCE'] + ':*'\
+                           + '\n`-------------------------`'
 
             i = 0
             for usr_wallet in user_object['usr_wallets'][:]:
@@ -437,7 +446,17 @@ def scheduler_balance_changes_check(bot, update):
 
                     if txt_response == '':
 
-                        txt_response = usr_language_array['TXT_WALLET_UPDATES']
+                        price_ethereum = ''
+
+                        if utils.price_ethusd and utils.price_ethbtc:
+
+                            price_ethereum = usr_language_array['TXT_PRICE']\
+                                    + '`$' + str(utils.price_ethusd)\
+                                    + '` (' + str(utils.price_ethbtc) + ' BTC)'\
+                                    + '\n`-------------------------`\n'
+
+                        txt_response = price_ethereum + usr_language_array['TXT_WALLET_UPDATES']\
+                                        + '\n`-------------------------`'
 
                     # update BD wallet info
                     user_object['usr_wallets'][i] = eth_wallet_changes['usr_wallet']
