@@ -7,7 +7,7 @@ This is a telegram bot to control balance of your Ethereum wallets, you can add 
  wallets and are going to keep you informed about all changes on it.
  
  
-* Had been used [pyTelegramBotAPI Library](https://github.com/eternnoir/pyTelegramBotAPI "pyTelegramBotAPI Library GitHub Repository"), 
+* Had been used [python-telegram-bot](https://github.com/python-telegram-bot/python-telegram-bot "python-telegram-bot API Library GitHub Repository") API Library, 
 you can use *start_polling* or *webhook* updates methods to recieve the messages (see ethdroidbot.py code and pyTelegramBotAPI Library manual)
 
 * [MongoBD database](https://github.com/mongodb/mongo) and [PyMongo](https://github.com/mongodb/mongo-python-driver "PyMongo") - the Python driver for MongoDB had been used
