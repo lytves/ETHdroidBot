@@ -13,9 +13,9 @@ you can use *start_polling* or *webhook* updates methods to recieve the messages
 * [MongoBD database](https://github.com/mongodb/mongo) and [PyMongo](https://github.com/mongodb/mongo-python-driver "PyMongo") - the Python driver for MongoDB had been used
 to store user's wallets and balances
 
-* To receive Ethereum balances is used API - “Powered by [Ethplorer.io](https://ethplorer.io/ "Ethplorer.io")” 
+* “Powered by [Ethplorer.io](https://ethplorer.io/ "Ethplorer.io")” for view ethereum tokens balances. I would recommend you to get personal Ethplorer API key, see [Ethplorer's public API](https://github.com/EverexIO/Ethplorer/wiki/ethplorer-api "Ethplorer's public API")
 
-* To show current Ethereum market price is used API - [The Etherscan Ethereum Developer APIs](https://etherscan.io/apis "The Etherscan Ethereum Developer APIs")
+* To show current Ethereum market price is used API - [CryptoCompare API](https://www.cryptocompare.com/api/ "CryptoCompare API")
 
 ### Install:
 
