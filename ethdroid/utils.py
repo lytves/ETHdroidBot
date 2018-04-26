@@ -5,7 +5,7 @@ import time
 
 from decimal import Decimal
 
-from ethdroid.config import ETHPLORER_API_URL, ETHERSCAN_API_URL, LENGTH_WALLET_ADDRESS, MAX_MESSAGE_LENGTH
+from ethdroid.config import ETHPLORER_API_URL, ETHERSCAN_API_URL, LENGTH_WALLET_ADDRESS, MAX_MESSAGE_LENGTH, CRYPTOCOMPARE_API_URL
 from ethdroid.languages import *
 from ethdroid.reply_markups import reply_markup_en, reply_markup_es, reply_markup_ru, \
     reply_markup_back_en, reply_markup_back_es, reply_markup_back_ru
@@ -108,14 +108,26 @@ def send_to_log(update, msg_type='command'):
 
 
 # the request for ethereum API
-def api_check_balance(usr_wallet_address):
+def api_check_balance(bot, usr_wallet_address):
 
     url = ETHPLORER_API_URL.format(usr_wallet_address)
-    response = requests.get(url)
 
-    module_logger.info("API request URL: %s", url)
+    request_error = False
+    request_error_msg = ''
+    response = ''
 
-    if response.status_code == requests.codes.ok:
+    headers = {'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'}
+
+    try:
+        response = requests.get(url, headers=headers, timeout=10)
+
+    except requests.exceptions.RequestException as e:
+        request_error = True
+        request_error_msg = str(e)
+
+        module_logger.info("API request URL: %s", url)
+
+    if not request_error and response.status_code == requests.codes.ok:
 
         # extract a json from response to a class "dict"
         response_dict = response.json()
@@ -124,7 +136,10 @@ def api_check_balance(usr_wallet_address):
 
     else:
 
-        module_logger.error('Error while request API: "%s". Error code: "%s"' % (url, response.status_code))
+        if response:
+            request_error_msg += ' ' + response
+
+        module_logger.error('Error while request API: "%s". Error code: "%s"' % (url, response))
         # TODO send here a message to admin to inform about a trouble
 
 
@@ -226,21 +241,35 @@ def api_check_eth_price(bot, job):
 
     global price_ethusd, price_ethbtc
 
-    response = requests.get(ETHERSCAN_API_URL)
+    request_error = False
+    request_error_msg = ''
+    response = ''
 
-    module_logger.info("API request URL: %s", ETHERSCAN_API_URL)
+    headers = {'user-agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36'}
 
-    if response.status_code == requests.codes.ok and response.json()['message'] == 'OK':
+    try:
+        response = requests.get(CRYPTOCOMPARE_API_URL, headers=headers, timeout=10)
+
+    except requests.exceptions.RequestException as e:
+        request_error = True
+        request_error_msg = str(e)
+
+    module_logger.info("API request URL: %s", "min-api.cryptocompare.com")
+
+    if not request_error and response.status_code == requests.codes.ok and 'Response' not in response.json():
 
         # extract a json from response to a class "dict"
         response_dict = response.json()
 
-        price_ethusd = Decimal(response_dict['result']['ethusd'])
-        price_ethbtc = Decimal(response_dict['result']['ethbtc'])
+        price_ethusd = round(Decimal(response_dict['USD']), 2).normalize()
+        price_ethbtc = round(Decimal(response_dict['BTC']), 6).normalize()
 
     else:
 
-        module_logger.error('Error while request ETHERSCAN.io API. Error code: "%s"' % (response.json()['message']))
+        if response:
+            request_error_msg += ' ' + response.json()['message']
+
+        module_logger.error('Error while request min-api.cryptocompare.com API. Error code: "%s"' % request_error_msg)
         # TODO send here a message to admin to inform about a trouble
 
 
@@ -410,6 +439,25 @@ def text_wallet_changes(usr_language_array, wallet_changes, wallet_address=''):
 def eth_address_short(eth_address):
 
     return eth_address[:6] + '....' + eth_address[-6:]
+
+
+# to show current ETH price in title of a message
+def show_eth_price(usr_language_array):
+
+    global price_ethusd, price_ethbtc
+
+    if price_ethusd and price_ethbtc:
+
+        price_ethereum = usr_language_array['TXT_PRICE'] \
+                         + '`$' + str(price_ethusd) \
+                         + '` (' + str(price_ethbtc) + ' BTC)' \
+                         + '\n`-------------------------`\n'
+
+        return price_ethereum
+
+    else:
+
+        return ''
 
 
 # to split long message for shorter parters, see github issue:

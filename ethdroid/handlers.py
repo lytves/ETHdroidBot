@@ -1,3 +1,5 @@
+import time
+
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, ChatAction
 from telegram.ext.dispatcher import run_async
 
@@ -86,7 +88,7 @@ def text_handler(bot, update):
 
     if not mongo.connectionOK:
         # TODO send a message for admin for DB error
-        print('DB don\'t connect successfully')
+        utils.module_logger.warning('DB don\'t connect successfully')
         return
 
     user_object = mongo.get_user(usr_chat_id)
@@ -183,7 +185,7 @@ def text_handler(bot, update):
                     bot.send_chat_action(chat_id=usr_chat_id, action=ChatAction.TYPING)
 
                     # the response from API with address all info
-                    usr_wallet_api_dict = utils.api_check_balance(usr_new_wallet_address)
+                    usr_wallet_api_dict = utils.api_check_balance(bot, usr_new_wallet_address)
 
                     # here write balance of new added address ETH and tokens to BD
                     if usr_wallet_api_dict:
@@ -206,8 +208,10 @@ def text_handler(bot, update):
 
                             usr_wallet.update({"tokens": tokens})
 
-                        # general block code if wallet added
-                        txt_response = usr_language_array['TXT_ADD_ETH_ADDRESS_WALLET_ADDED']
+                        # general text message with wallet balance info if added
+                        txt_response = utils.show_eth_price(usr_language_array)
+
+                        txt_response += usr_language_array['TXT_ADD_ETH_ADDRESS_WALLET_ADDED']
 
                         # check wallet balance now - pass here the response from API completed
                         txt_response += utils.text_wallet_info(usr_lang_code, usr_wallet_api_dict)
@@ -308,14 +312,7 @@ def text_handler(bot, update):
             # to notify a user "printing..." on waiting response
             bot.send_chat_action(chat_id=usr_chat_id, action=ChatAction.TYPING)
 
-            price_ethereum = ''
-
-            if utils.price_ethusd and utils.price_ethbtc:
-
-                price_ethereum = usr_language_array['TXT_PRICE'] \
-                                 + '`$' + str(utils.price_ethusd) \
-                                 + '` (' + str(utils.price_ethbtc) + ' BTC)' \
-                                 + '\n`-------------------------`\n'
+            price_ethereum = utils.show_eth_price(usr_language_array)
 
             txt_response = price_ethereum + '💲💲💲 *' + usr_language_array['MENU_CHECK_ALL_BALANCE'] + ':*'\
                            + '\n`-------------------------`'
@@ -324,7 +321,7 @@ def text_handler(bot, update):
             for usr_wallet in user_object['usr_wallets'][:]:
 
                 # the  API request to receive wallet actual balance info
-                usr_wallet_api_dict = utils.api_check_balance(usr_wallet['address'])
+                usr_wallet_api_dict = utils.api_check_balance(bot, usr_wallet['address'])
 
                 # here write balance of new added address ETH and tokens to BD
                 if usr_wallet_api_dict:
@@ -346,6 +343,9 @@ def text_handler(bot, update):
 
                 # here is counter iteration !!!
                 i += 1
+
+                 # sleep for 1.0 ms for not overload Ethplorer API
+                time.sleep(1.0)
 
         else:
 
@@ -405,13 +405,13 @@ def text_handler(bot, update):
 ################################################################################################################
 ############################  bot's job - ethplorer API wallets parser handler  ###################################################
 ################################################################################################################
-@run_async
+#@run_async
 def scheduler_balance_changes_check(bot, update):
 
     # logging
     utils.send_to_log(update, 'scheduler')
 
-    # create user object from BD Mongo
+    # create DAO object to work with BD Mongo
     mongo = MongoDatabase()
 
     if not mongo.connectionOK:
@@ -433,7 +433,7 @@ def scheduler_balance_changes_check(bot, update):
         for usr_wallet in user_object['usr_wallets']:
 
             # the  API request to receive wallet actual balance info
-            usr_wallet_api_dict = utils.api_check_balance(usr_wallet['address'])
+            usr_wallet_api_dict = utils.api_check_balance(bot, usr_wallet['address'])
 
             # here write balance of new added address ETH and tokens to BD
             if usr_wallet_api_dict:
@@ -446,14 +446,7 @@ def scheduler_balance_changes_check(bot, update):
 
                     if txt_response == '':
 
-                        price_ethereum = ''
-
-                        if utils.price_ethusd and utils.price_ethbtc:
-
-                            price_ethereum = usr_language_array['TXT_PRICE']\
-                                    + '`$' + str(utils.price_ethusd)\
-                                    + '` (' + str(utils.price_ethbtc) + ' BTC)'\
-                                    + '\n`-------------------------`\n'
+                        price_ethereum = utils.show_eth_price(usr_language_array)
 
                         txt_response = price_ethereum + usr_language_array['TXT_WALLET_UPDATES']\
                                         + '\n`-------------------------`'
@@ -470,6 +463,9 @@ def scheduler_balance_changes_check(bot, update):
                 # here is counter iteration !!!
                 i += 1
 
+            # sleep for 1.0 ms for not overload Ethplorer API
+            time.sleep(1.0)
+
         if to_update_bd_user:
 
             mongo.edit_user(user_object)
@@ -477,3 +473,4 @@ def scheduler_balance_changes_check(bot, update):
         if txt_response:
             utils.send_message(bot, chat_id=user_object['usr_tg_id'], text=txt_response,
                                parse_mode="Markdown")
+            time.sleep(1.0)
