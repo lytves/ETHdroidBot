@@ -13,6 +13,10 @@ ETHERSCAN_API_KEY = 'put_your_api_token_here'
 ETHERSCAN_API_URL = 'https://api.etherscan.io/api?module=stats&action=ethprice&apikey=' + ETHERSCAN_API_KEY
 
 
+# CryptoCompare API
+CRYPTOCOMPARE_API_URL = 'https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=BTC,USD,EUR'
+
+
 # number of ETH wallets user can to add
 NUMBER_WALLETS = 5
 # ETH address format
