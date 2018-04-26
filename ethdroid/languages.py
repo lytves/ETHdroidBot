@@ -28,7 +28,9 @@ RUSSIAN = {'TXT_USE_START_BUTTON': '🚀 Используй команду /star
            'TXT_WALLET_UPDATES': '👉👉👉 Изменение баланса:',
            'TXT_PRICE': 'Курс ETH: ',
            'TXT_START_MSG': '👽 Привет, я твой ETHdroid Bot! Я помогу тебе быть в курсе '
-                            'актуального баланса Эфириум и ERC токенов на твоих кошельках.'}
+                            'актуального баланса Эфириум и ERC токенов на твоих кошельках.',
+           'TXT_GENERAL_MSG': 'Наблюдаются проблемы у API сервиса Ethereum. Временно не работает запрос о'\
+                            + ' балансе кошелька.'}
 
 # Spanish language ('es' and 'es-ES')
 SPANISH = {'TXT_USE_START_BUTTON': '🚀 ¡Utiliza el comando /start para empezar usar el bot!',
@@ -57,7 +59,9 @@ SPANISH = {'TXT_USE_START_BUTTON': '🚀 ¡Utiliza el comando /start para empeza
            'TXT_NO_ETH_WALLET': 'ℹ ¡No tienes ninguna *cartera de Ethereum*!',
            'TXT_WALLET_UPDATES': '👉👉👉 Saldo se ha cambiado:',
            'TXT_PRICE': 'Precio ETH: ',
-           'TXT_START_MSG': '👽 ¡Hola! Soy tu ETHdroid Bot, te ayudo para que siempre sepas el saldo de Ethereum y ERC tokens en tus carteras.'}
+           'TXT_START_MSG': '👽 ¡Hola! Soy tu ETHdroid Bot, te ayudo para que siempre sepas el saldo de Ethereum y ERC tokens en tus carteras.',
+           'TXT_GENERAL_MSG': 'El servicio API de Ethereum ahora tiene algúnos problemas. La información'\
+                            + ' sobre saldo no está disponible temporalmente.'}
 
 # English language (by default)
 ENGLISH = {'TXT_USE_START_BUTTON': '🚀 Use the command /start to bot\'s work!',
@@ -87,4 +91,7 @@ ENGLISH = {'TXT_USE_START_BUTTON': '🚀 Use the command /start to bot\'s work!'
            'TXT_WALLET_UPDATES': '👉👉👉 Balance changed:',
            'TXT_PRICE': 'Price ETH: ',
            'TXT_START_MSG': '👽 Hello! I am your ETHdroid Bot, I will help you '
-                            'to control the balance of Ethereum and ERC tokens on yours wallets.'}
+                            'to control the balance of Ethereum and ERC tokens on yours wallets.',
+           'TXT_GENERAL_MSG': 'Ethereum API service has a some working problems. Information about'\
+                                + ' wallet balance temporarily doesn\'t accessible '}
+
