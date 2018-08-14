@@ -299,7 +299,13 @@ def eth_wallet_changes(usr_wallet, usr_wallet_api_dict):
             # to create new token's list to compare with old token's list then
             # and update it to BD then
             for token_response in usr_wallet_api_dict['tokens']:
-                new_wallet_bd_tokens.append({'address': token_response['tokenInfo']['address'],
+
+                # 2018-08-13 changes to remove the problem of
+                # e.g. "ZIL: 0 => 0"
+                # when ethplorer.io responses with an old token that already doesn't exists in the wallet
+                if token_response['balance'] > 0:
+
+                    new_wallet_bd_tokens.append({'address': token_response['tokenInfo']['address'],
                                              'symbol': token_response['tokenInfo']['symbol'],
                                              'decimals': token_response['tokenInfo']['decimals'],
                                              'balance': token_response['balance']})
