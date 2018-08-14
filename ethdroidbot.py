@@ -8,11 +8,11 @@ from telegram.ext import CommandHandler, MessageHandler, CallbackQueryHandler, F
 from ethdroid.config import TOKEN_BOT, YOUR_TELEGRAM_ALIAS
 from ethdroid.handlers import start, admin_say, error, text_handler, scheduler_balance_changes_check
 
-from ethdroid.utils import module_logger, api_check_eth_price
+from ethdroid.utils import service_logger, api_check_eth_price
 
 
 def main():
-    module_logger.info("Start the @ETHdroidBot bot!")
+    service_logger.info("Start the @ETHdroidBot bot!")
 
     # create an object "bot"
     updater = Updater(token=TOKEN_BOT, workers=10)
@@ -70,8 +70,8 @@ def main():
     # put your server IP adress instead 0.0.0.0
     # and see this page https://github.com/python-telegram-bot/python-telegram-bot/wiki/Webhooks
     # updater.start_webhook(listen='127.0.0.1', port=5005, url_path=TOKEN_BOT)
-    # updater.bot.set_webhook(url='https://0.0.0.0/' + TOKEN_BOT,
-    #                   certificate=open('/etc/nginx/PUBLIC.pem', 'rb'))
+    # updater.bot.set_webhook(url='https://51.15.75.117/' + TOKEN_BOT,
+    #                         certificate=open('/etc/nginx/PUBLIC.pem', 'rb'))
 
 
 if __name__ == '__main__':
