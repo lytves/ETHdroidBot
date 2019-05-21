@@ -1,7 +1,5 @@
 # ETHdroidBot
 
-[@ETHdroidBot](https://t.me/ETHdroidBot "@ETHdroidBot") - enjoy it!
-
 This is a telegram bot to control balance of your Ethereum wallets, you can add your ethereum addresses (wallets)
  and control your balance of Ethereum and ERC tokens on it, also bot are going to check balance of your
  wallets and are going to keep you informed about all changes on it.
