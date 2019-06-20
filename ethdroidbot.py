@@ -8,11 +8,11 @@ from telegram.ext import CommandHandler, MessageHandler, CallbackQueryHandler, F
 from ethdroid.config import TOKEN_BOT, YOUR_TELEGRAM_ALIAS
 from ethdroid.handlers import start, admin_say, error, text_handler, scheduler_balance_changes_check
 
-from ethdroid.utils import service_logger, api_check_eth_price
+from ethdroid.utils import module_logger, api_check_eth_price
 
 
 def main():
-    service_logger.info("Start the @ETHdroidBot bot!")
+    module_logger.info("Start the @ETHdroidBot bot!")
 
     # create an object "bot"
     updater = Updater(token=TOKEN_BOT, workers=10)
